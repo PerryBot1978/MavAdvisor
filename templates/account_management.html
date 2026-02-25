@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Management - MavAdvisor</title>
+</head>
+<body>
+<div style="display: flex;">
+    <!-- Sidebar -->
+    {% include 'sidebar.html' %}
+    
+    <!-- Main Content -->
+    <div style="flex: 1; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>Account Management</h1>
+        </div>
+        
+        <!-- Change Password Section -->
+        <div style="border: 2px solid #ccc; padding: 20px; border-radius: 10px; max-width: 500px; margin: 20px 0;">
+            <h2>Change Password</h2>
+            <form style="margin-top: 15px;">
+                <div style="margin-bottom: 15px;">
+                    <label for="current-password" style="display: block; margin-bottom: 5px;">Current Password</label>
+                    <input type="password" id="current-password" name="current-password" style="padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="new-password" style="display: block; margin-bottom: 5px;">New Password</label>
+                    <input type="password" id="new-password" name="new-password" style="padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label for="confirm-password" style="display: block; margin-bottom: 5px;">Confirm New Password</label>
+                    <input type="password" id="confirm-password" name="confirm-password" style="padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <button type="submit" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Update Password</button>
+            </form>
+        </div>
+        
+        <!-- Configure TOTP Section -->
+        <div style="border: 2px solid #ccc; padding: 20px; border-radius: 10px; max-width: 500px; margin: 20px 0;">
+            <h2>Two-Factor Authentication (TOTP)</h2>
+            <p style="margin-top: 10px; margin-bottom: 20px;">Add an extra layer of security to your account by enabling Time-based One-Time Password (TOTP) authentication.</p>
+            <div style="margin-bottom: 20px;">
+                <h3 style="margin-bottom: 10px;">Current Status: <span style="color: #f44336;">Disabled</span></h3>
+                <p>To enable TOTP, scan the QR code with an authenticator app like Google Authenticator or Authy.</p>
+                <!-- Placeholder for QR code -->
+                <div style="width: 200px; height: 200px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; margin: 20px auto; border: 1px dashed #ccc;">
+                    <p style="color: #777;">QR Code Placeholder</p>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="totp-code" style="display: block; margin-bottom: 5px;">Enter 6-digit code from authenticator</label>
+                    <input type="text" id="totp-code" name="totp-code" maxlength="6" style="padding: 8px; width: 150px; border: 1px solid #ccc; border-radius: 4px; text-align: center;">
+                </div>
+            </div>
+            <button type="button" style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">Enable TOTP</button>
+            <button type="button" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-left: 10px;">Disable TOTP</button>
+        </div>
+        
+        <!-- Delete Account Section -->
+        <div style="border: 2px solid #ccc; padding: 20px; border-radius: 10px; max-width: 500px; margin: 20px 0; border-color: #f44336;">
+            <h2 style="color: #f44336;">Delete Account</h2>
+            <p style="margin-top: 10px; margin-bottom: 20px;"><strong>Warning:</strong> This action is permanent and cannot be undone. All your data will be deleted immediately.</p>
+            <div style="margin-bottom: 20px;">
+                <label for="delete-confirm" style="display: block; margin-bottom: 10px;">
+                    <input type="checkbox" id="delete-confirm" name="delete-confirm" style="margin-right: 8px;">
+                    I understand that this action is irreversible and I wish to delete my account.
+                </label>
+                <label for="delete-password" style="display: block; margin-bottom: 5px;">Enter your password to confirm</label>
+                <input type="password" id="delete-password" name="delete-password" style="padding: 8px; width: 100%; border: 1px solid #ccc; border-radius: 4px;">
+            </div>
+            <button type="button" id="delete-account-btn" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; opacity: 0.5;" disabled>Delete Account</button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Enable delete account button only when checkbox is checked
+    const deleteCheckbox = document.getElementById('delete-confirm');
+    const deletePassword = document.getElementById('delete-password');
+    const deleteButton = document.getElementById('delete-account-btn');
+    
+    function updateDeleteButton() {
+        if (deleteCheckbox.checked && deletePassword.value.trim() !== '') {
+            deleteButton.disabled = false;
+            deleteButton.style.opacity = '1';
+        } else {
+            deleteButton.disabled = true;
+            deleteButton.style.opacity = '0.5';
+        }
+    }
+    
+    deleteCheckbox.addEventListener('change', updateDeleteButton);
+    deletePassword.addEventListener('input', updateDeleteButton);
+    
+    // Delete account button click handler
+    deleteButton.addEventListener('click', function() {
+        if (confirm('Are you absolutely sure you want to delete your account? This cannot be undone.')) {
+            alert('Account deletion requested. This functionality is not yet implemented.');
+            // In a real application, you would submit a form or make an API call here
+        }
+    });
+    
+    // TOTP enable/disable button handlers
+    const enableTotpBtn = document.querySelector('button[style*="background-color: #2196F3"]');
+    const disableTotpBtn = document.querySelector('button[style*="background-color: #f44336"]');
+    
+    enableTotpBtn.addEventListener('click', function() {
+        alert('TOTP enable functionality will be implemented later.');
+    });
+    
+    disableTotpBtn.addEventListener('click', function() {
+        alert('TOTP disable functionality will be implemented later.');
+    });
+    
+    // Password form submission
+    const passwordForm = document.querySelector('form');
+    passwordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newPass = document.getElementById('new-password').value;
+        const confirmPass = document.getElementById('confirm-password').value;
+        if (newPass !== confirmPass) {
+            alert('New password and confirmation do not match.');
+            return;
+        }
+        alert('Password change requested. This functionality is not yet implemented.');
+    });
+});
+</script>
+</body>
+</html>

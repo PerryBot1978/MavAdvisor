@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Planner - MavAdvisor</title>
+</head>
+<body>
+<div style="display: flex;">
+    <!-- Sidebar -->
+    {% include 'sidebar.html' %}
+    
+    <!-- Main Content -->
+    <div style="flex: 1; padding: 20px;">
+    <h1>Course Planner</h1>
+    
+    <!-- Plan Semester Section -->
+    <h2>Plan Semester</h2>
+    
+    <div style="margin: 20px 0;">
+        <button style="padding: 12px 24px; background-color: #2196F3; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px; margin-bottom: 20px;">
+            Generate Course Options
+        </button>
+    </div>
+    
+    <!-- Course Sets Table -->
+    <div style="display: flex; gap: 30px; margin-bottom: 40px;">
+        <!-- Set 1 -->
+        <div style="flex: 1;">
+            <h3>Set 1</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Course ID</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Course Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">CSE 2340</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Data Structures</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="border: 1px solid #ddd; padding: 12px;">CSE 3310</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Algorithms</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">MATH 2425</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Calculus II</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="border: 1px solid #ddd; padding: 12px;">PHIL 2317</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Ethics in Computing</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">ENGL 1302</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Composition II</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Set 2 -->
+        <div style="flex: 1;">
+            <h3>Set 2</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Course ID</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Course Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">CSE 3320</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Operating Systems</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="border: 1px solid #ddd; padding: 12px;">CSE 3380</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Database Systems</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">MATH 2326</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Calculus III</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="border: 1px solid #ddd; padding: 12px;">PHYS 1444</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">General Physics II</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">HIST 1302</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">US History since 1865</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Set 3 -->
+        <div style="flex: 1;">
+            <h3>Set 3</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Course ID</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Course Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">CSE 4316</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Software Engineering</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="border: 1px solid #ddd; padding: 12px;">CSE 4308</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">AI & Machine Learning</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">MATH 3310</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Linear Algebra</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9;">
+                        <td style="border: 1px solid #ddd; padding: 12px;">STAT 3332</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">Probability & Statistics</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">POLS 2311</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">US Government</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">
+                            <button style="padding: 6px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 4px; font-size: 14px;">
+                                Add to Future Courses
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Course Search Section -->
+    <h2>Course Search</h2>
+    
+    <!-- Search Bar -->
+    <div style="margin: 20px 0;">
+        <input type="text" placeholder="Search by course ID or name..." style="padding: 10px; width: 400px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px;">
+        <button style="padding: 10px 20px; background-color: #2196F3; color: white; border: none; border-radius: 4px; margin-left: 10px; font-size: 16px;">Search</button>
+    </div>
+    
+    <!-- Search Results Table -->
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Course ID</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Course Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 12px;">CSE 1320</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">Intermediate Programming</td>
+            </tr>
+            <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 12px;">CSE 2340</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">Data Structures</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 12px;">CSE 3310</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">Algorithms</td>
+            </tr>
+            <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 12px;">CSE 3320</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">Operating Systems</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 12px;">CSE 3380</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">Database Systems</td>
+            </tr>
+            <tr style="background-color: #f9f9f9;">
+                <td style="border: 1px solid #ddd; padding: 12px;">CSE 4308</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">AI & Machine Learning</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 12px;">CSE 4316</td>
+                <td style="border: 1px solid #ddd; padding: 12px;">Software Engineering</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <!-- Back to Dashboard Link -->
+    <div style="margin-top: 40px;">
+        <a href="/user/dashboard" style="color: #2196F3; text-decoration: none; font-weight: bold;">← Back to Dashboard</a>
+    </div>
+</div>
+</div>
+</body>
+</html>
