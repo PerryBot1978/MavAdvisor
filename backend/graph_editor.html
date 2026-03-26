@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Graph Editor</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #242836;
+      --border: #2e3348;
+      --text: #e2e4ed;
+      --text-dim: #8b8fa3;
+      --accent: #6c5ce7;
+      --accent-hover: #7f71ed;
+      --danger: #e74c3c;
+      --danger-hover: #c0392b;
+      --success: #2ecc71;
+      --warning: #f39c12;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ─── Top Bar ─── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .topbar h1 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-right: 20px;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+    }
+    .topbar .sep {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+
+    button {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    button:hover { background: var(--border); }
+    button.primary { background: var(--accent); border-color: var(--accent); }
+    button.primary:hover { background: var(--accent-hover); }
+    button.danger { background: var(--danger); border-color: var(--danger); }
+    button.danger:hover { background: var(--danger-hover); }
+    button.success { background: #27ae60; border-color: #27ae60; }
+    button.success:hover { background: var(--success); }
+    button.warn { background: #d68910; border-color: #d68910; }
+    button.warn:hover { background: var(--warning); }
+
+    /* ─── Main Layout ─── */
+    .main {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ─── Canvas ─── */
+    #cy {
+      flex: 1;
+      background: var(--bg);
+      position: relative;
+    }
+    .canvas-hint {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      font-size: 12px;
+      color: var(--text-dim);
+      pointer-events: none;
+      z-index: 5;
+      line-height: 1.7;
+      background: rgba(15,17,23,0.85);
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .canvas-hint kbd {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: inherit;
+    }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      width: 330px;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar-section {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-section h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .field { margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .field input, .field select {
+      width: 100%;
+      padding: 8px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus, .field select:focus {
+      border-color: var(--accent);
+    }
+    .field input::placeholder { color: var(--text-dim); opacity: 0.5; }
+
+    .selection-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .node-list {
+      max-height: 160px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+    .node-list-item {
+      padding: 6px 10px;
+      font-size: 12px;
+      border-radius: 5px;
+      margin-bottom: 2px;
+      background: var(--bg);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .node-list-item:hover { border-color: var(--border); }
+    .node-list-item.selected { border-color: var(--warning); background: rgba(243,156,18,0.08); }
+
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-dim);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ─── Edge Mode Indicator ─── */
+    .mode-indicator {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--warning);
+      color: #000;
+      padding: 6px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 10;
+      display: none;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+
+    /* ─── Modal ─── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      width: 560px;
+      max-width: 90vw;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal h2 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: var(--accent);
+    }
+    .modal pre {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      font-size: 13px;
+      font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      justify-content: flex-end;
+    }
+
+    /* ─── Toast ─── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--success);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 200;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+    /* Add Node Dialog */
+    .add-node-row {
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+    }
+    .add-node-row .field { flex: 1; margin-bottom: 0; }
+
+    /* Field schema tags */
+    .field-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 5px;
+      margin-right: 4px;
+    }
+    .field-tag .ft-name { font-weight: 600; }
+    .field-tag .ft-type { color: var(--text-dim); font-size: 11px; }
+    .field-tag .ft-default { color: var(--accent); font-size: 11px; }
+    .field-tag .ft-remove {
+      cursor: pointer;
+      color: var(--danger);
+      font-weight: bold;
+      font-size: 14px;
+      margin-left: 2px;
+      line-height: 1;
+    }
+    .field-tag .ft-remove:hover { color: var(--danger-hover); }
+
+    .add-field-form {
+      display: flex;
+      gap: 6px;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .add-field-form .field { margin-bottom: 0; flex: 1; min-width: 70px; }
+
+    /* hidden file input */
+    #file-load { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <h1>&#9670; Course Graph Editor</h1>
+    <div class="sep"></div>
+    <button id="btn-add-node" class="primary" title="Add a new course node">+ Node</button>
+    <button id="btn-add-edge" title="Draw a prereq edge (solid)">&#8594; Edge</button>
+    <button id="btn-add-coreq" title="Draw a coreq edge (dotted)">&#8230; Coreq</button>
+    <button id="btn-delete" class="danger" title="Delete selected nodes/edges">&#x2715; Delete</button>
+    <div class="sep"></div>
+    <button id="btn-save" class="warn" title="Save to current file (Ctrl+S)">&#x1F4BE; Save</button>
+    <button id="btn-save-as" title="Save as a new file">&#x1F4BE; Save As</button>
+    <button id="btn-load" title="Load graph from file">&#x1F4C2; Load</button>
+    <input type="file" id="file-load" accept=".json" />
+    <div class="sep"></div>
+    <button id="btn-export" class="success" title="Export to NetworkX Python code">&#x2197; Export NetworkX</button>
+    <div class="sep"></div>
+    <button id="btn-clear" title="Clear entire graph">Clear All</button>
+    <button id="btn-fit" title="Fit graph to screen">Fit View</button>
+    <button id="btn-layout" title="Auto-layout nodes">Auto Layout</button>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Canvas -->
+    <div style="position:relative;flex:1;display:flex;">
+      <div id="cy"></div>
+      <div class="canvas-hint">
+        <kbd>Click</kbd> select &nbsp;|&nbsp;
+        <kbd>Shift+Click</kbd> multi-select &nbsp;|&nbsp;
+        <kbd>Shift+Drag</kbd> box-select<br/>
+        <kbd>Del</kbd> delete &nbsp;|&nbsp;
+        Double-click node to quick-edit &nbsp;|&nbsp;
+        <kbd>Ctrl+S</kbd> save &nbsp;|&nbsp;
+        <kbd>Ctrl+Shift+S</kbd> save as
+      </div>
+      <div class="mode-indicator" id="mode-indicator">EDGE MODE — Click source, then target &nbsp; <span style="cursor:pointer" id="cancel-edge">&#x2715; Cancel</span></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Add Node -->
+      <div class="sidebar-section">
+        <h3>Add Node</h3>
+        <div class="add-node-row">
+          <div class="field">
+            <label>Course Number</label>
+            <input type="text" id="input-course-num" placeholder="e.g. CSE 1310" />
+          </div>
+          <button class="primary" id="btn-add-node-sidebar" style="margin-bottom:0;height:35px;">Add</button>
+        </div>
+      </div>
+
+      <!-- Metadata Schema / Add Field -->
+      <div class="sidebar-section">
+        <h3>Metadata Fields</h3>
+        <p style="font-size:11px;color:var(--text-dim);margin-bottom:10px;">
+          These fields exist on every node. Add a new field and set its default value — all existing nodes get it.
+        </p>
+        <div id="field-tags"></div>
+        <div class="add-field-form">
+          <div class="field">
+            <label>Field Name</label>
+            <input type="text" id="new-field-name" placeholder="e.g. difficulty" />
+          </div>
+          <div class="field" style="min-width:85px;max-width:95px;">
+            <label>Type</label>
+            <select id="new-field-type">
+              <option value="str">Text</option>
+              <option value="int">Integer</option>
+              <option value="bool">Boolean</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Default</label>
+            <input type="text" id="new-field-default" placeholder="default value" />
+          </div>
+          <button class="primary" id="btn-add-field" style="height:35px;">+ Add</button>
+        </div>
+      </div>
+
+      <!-- Metadata Editor -->
+      <div class="sidebar-section" id="metadata-section">
+        <h3>Edit Selected Nodes</h3>
+        <div id="no-selection" class="empty-state">
+          Select one or more nodes to edit metadata.<br/>
+          Use <kbd>Shift+Click</kbd> to multi-select.
+        </div>
+        <div id="selection-panel" style="display:none;">
+          <div class="selection-badge" id="selection-count">1 node selected</div>
+          <div id="meta-fields-container"></div>
+          <button id="btn-apply-meta" class="primary" style="width:100%;margin-top:10px;">Apply to Selected</button>
+        </div>
+      </div>
+
+      <!-- All Nodes List -->
+      <div class="sidebar-section">
+        <h3>All Nodes</h3>
+        <div id="node-list" class="node-list">
+          <div class="empty-state" style="padding:12px;">No nodes yet. Add one above.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Export Modal -->
+  <div class="modal-overlay" id="export-modal">
+    <div class="modal">
+      <h2>NetworkX Python Code</h2>
+      <pre id="export-code"></pre>
+      <div class="modal-actions">
+        <button id="btn-copy-code" class="primary">&#x2398; Copy to Clipboard</button>
+        <button id="btn-download-code" class="success">&#x2913; Download .py</button>
+        <button id="btn-close-modal">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ══════════════════════════════════════
+    //  STATE
+    // ══════════════════════════════════════
+    let edgeMode = false;
+    let edgeSource = null;
+    let edgeKind = 'prereq';  // 'prereq' (solid) or 'coreq' (dotted)
+
+    // Metadata field schema: array of {key, type ('str'|'int'|'bool'), defaultValue}
+    // The 3 built-in fields are non-removable
+    let metaFields = [
+      { key: 'name',     type: 'str',  defaultValue: 'unknown', builtIn: true },
+      { key: 'credits',  type: 'int',  defaultValue: 0,         builtIn: true },
+      { key: 'category', type: 'str',  defaultValue: 'unknown', builtIn: true },
+    ];
+
+    // ══════════════════════════════════════
+    //  CYTOSCAPE
+    // ══════════════════════════════════════
+    const cy = cytoscape({
+      container: document.getElementById('cy'),
+      style: [
+        {
+          selector: 'node',
+          style: {
+            'label': 'data(id)',
+            'text-valign': 'center',
+            'text-halign': 'center',
+            'background-color': '#2d3250',
+            'border-width': 2,
+            'border-color': '#6c5ce7',
+            'color': '#e2e4ed',
+            'font-size': '12px',
+            'font-family': 'Segoe UI, system-ui, sans-serif',
+            'font-weight': '600',
+            'width': 'label',
+            'height': 35,
+            'padding': '14px',
+            'shape': 'roundrectangle',
+            'text-wrap': 'none',
+          }
+        },
+        {
+          selector: 'node:selected',
+          style: {
+            'border-color': '#f39c12',
+            'border-width': 3,
+            'background-color': '#3a2f1a',
+          }
+        },
+        {
+          selector: 'node.edge-source',
+          style: {
+            'border-color': '#2ecc71',
+            'border-width': 3,
+            'background-color': '#1a3a2a',
+          }
+        },
+        {
+          selector: 'edge',
+          style: {
+            'width': 2,
+            'line-color': '#4a5078',
+            'target-arrow-color': '#4a5078',
+            'target-arrow-shape': 'triangle',
+            'curve-style': 'bezier',
+            'arrow-scale': 1.1,
+            'line-style': 'solid',
+          }
+        },
+        {
+          selector: 'edge[kind="coreq"]',
+          style: {
+            'line-style': 'dashed',
+            'line-dash-pattern': [6, 4],
+            'line-color': '#7c8abf',
+            'target-arrow-color': '#7c8abf',
+          }
+        },
+        {
+          selector: 'edge:selected',
+          style: {
+            'line-color': '#f39c12',
+            'target-arrow-color': '#f39c12',
+            'width': 3,
+          }
+        }
+      ],
+      layout: { name: 'preset' },
+      boxSelectionEnabled: true,
+      selectionType: 'additive',
+    });
+
+    // ══════════════════════════════════════
+    //  HELPERS
+    // ══════════════════════════════════════
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    function getRandomPosition() {
+      const container = document.getElementById('cy');
+      const w = container.offsetWidth;
+      const h = container.offsetHeight;
+      return {
+        x: 100 + Math.random() * (w - 200),
+        y: 80 + Math.random() * (h - 160),
+      };
+    }
+
+    function parseFieldValue(val, type) {
+      if (type === 'int') return parseInt(val) || 0;
+      if (type === 'bool') {
+        if (typeof val === 'boolean') return val;
+        const s = String(val).toLowerCase().trim();
+        return s === 'true' || s === '1' || s === 'yes';
+      }
+      return String(val);
+    }
+
+    function getFieldDefault(field) {
+      return parseFieldValue(field.defaultValue, field.type);
+    }
+
+    // Build default data object for a new node
+    function buildDefaultData(id) {
+      const data = { id };
+      metaFields.forEach(f => {
+        data[f.key] = getFieldDefault(f);
+      });
+      return data;
+    }
+
+    // ══════════════════════════════════════
+    //  METADATA SCHEMA MANAGEMENT
+    // ══════════════════════════════════════
+    function renderFieldTags() {
+      const container = document.getElementById('field-tags');
+      let html = '';
+      metaFields.forEach((f, i) => {
+        const removable = !f.builtIn;
+        html += `<span class="field-tag">
+          <span class="ft-name">${f.key}</span>
+          <span class="ft-type">${f.type}</span>
+          <span class="ft-default">= ${JSON.stringify(getFieldDefault(f))}</span>
+          ${removable ? `<span class="ft-remove" data-idx="${i}" title="Remove this field">&#x2715;</span>` : ''}
+        </span>`;
+      });
+      container.innerHTML = html;
+
+      // Bind remove buttons
+      container.querySelectorAll('.ft-remove').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx);
+          const field = metaFields[idx];
+          if (!confirm(`Remove field "${field.key}" from all nodes?`)) return;
+          // Remove data from all nodes
+          cy.nodes().forEach(n => n.removeData(field.key));
+          metaFields.splice(idx, 1);
+          renderFieldTags();
+          updateSidebar();
+          refreshNodeList();
+          toast(`Removed field: ${field.key}`);
+        });
+      });
+    }
+
+    document.getElementById('btn-add-field').addEventListener('click', addCustomField);
+    document.getElementById('new-field-name').addEventListener('keydown', e => { if (e.key === 'Enter') addCustomField(); });
+    document.getElementById('new-field-default').addEventListener('keydown', e => { if (e.key === 'Enter') addCustomField(); });
+
+    function addCustomField() {
+      const nameInput = document.getElementById('new-field-name');
+      const typeSelect = document.getElementById('new-field-type');
+      const defaultInput = document.getElementById('new-field-default');
+
+      const key = nameInput.value.trim().toLowerCase().replace(/\s+/g, '_');
+      if (!key) { toast('Enter a field name'); nameInput.focus(); return; }
+      if (key === 'id') { toast('"id" is reserved'); return; }
+      if (metaFields.some(f => f.key === key)) { toast(`Field "${key}" already exists`); return; }
+
+      const type = typeSelect.value;
+      let rawDefault = defaultInput.value.trim();
+      if (rawDefault === '') {
+        if (type === 'str') rawDefault = 'unknown';
+        else if (type === 'int') rawDefault = '0';
+        else if (type === 'bool') rawDefault = 'false';
+      }
+
+      const field = { key, type, defaultValue: rawDefault, builtIn: false };
+      metaFields.push(field);
+
+      // Apply default to ALL existing nodes
+      const defVal = getFieldDefault(field);
+      cy.nodes().forEach(n => {
+        n.data(key, defVal);
+      });
+
+      renderFieldTags();
+      updateSidebar();
+      refreshNodeList();
+      toast(`Added field "${key}" (default: ${JSON.stringify(defVal)}) to all ${cy.nodes().length} node(s)`);
+
+      nameInput.value = '';
+      defaultInput.value = '';
+    }
+
+    // ══════════════════════════════════════
+    //  ADD NODE
+    // ══════════════════════════════════════
+    function addNode(id) {
+      id = id.trim();
+      if (!id) { toast('Enter a course number'); return; }
+      if (cy.getElementById(id).length > 0) { toast('Node "' + id + '" already exists'); return; }
+      const pos = getRandomPosition();
+      cy.add({
+        group: 'nodes',
+        data: buildDefaultData(id),
+        position: pos,
+      });
+      toast('Added node: ' + id);
+      refreshNodeList();
+      document.getElementById('input-course-num').value = '';
+    }
+
+    document.getElementById('btn-add-node').addEventListener('click', () => {
+      document.getElementById('input-course-num').focus();
+    });
+    document.getElementById('btn-add-node-sidebar').addEventListener('click', () => {
+      addNode(document.getElementById('input-course-num').value);
+    });
+    document.getElementById('input-course-num').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addNode(e.target.value);
+    });
+
+    // ══════════════════════════════════════
+    //  EDGE MODE
+    // ══════════════════════════════════════
+    const modeIndicator = document.getElementById('mode-indicator');
+
+    function enterEdgeMode(kind) {
+      edgeMode = true;
+      edgeSource = null;
+      edgeKind = kind || 'prereq';
+      const label = edgeKind === 'coreq' ? 'COREQ EDGE MODE' : 'EDGE MODE';
+      modeIndicator.innerHTML = label + ' — Click source, then target &nbsp; <span style="cursor:pointer" id="cancel-edge">&#x2715; Cancel</span>';
+      modeIndicator.style.background = edgeKind === 'coreq' ? '#6c5ce7' : '#f39c12';
+      modeIndicator.style.display = 'block';
+      document.getElementById('cancel-edge').addEventListener('click', exitEdgeMode);
+      document.getElementById('cy').style.cursor = 'crosshair';
+    }
+    function exitEdgeMode() {
+      edgeMode = false;
+      if (edgeSource) {
+        edgeSource.removeClass('edge-source');
+        edgeSource = null;
+      }
+      modeIndicator.style.display = 'none';
+      document.getElementById('cy').style.cursor = '';
+    }
+
+    document.getElementById('btn-add-edge').addEventListener('click', () => {
+      if (edgeMode) { exitEdgeMode(); return; }
+      enterEdgeMode('prereq');
+    });
+    document.getElementById('btn-add-coreq').addEventListener('click', () => {
+      if (edgeMode) { exitEdgeMode(); return; }
+      enterEdgeMode('coreq');
+    });
+    document.getElementById('cancel-edge').addEventListener('click', exitEdgeMode);
+
+    cy.on('tap', 'node', function (evt) {
+      if (!edgeMode) return;
+      const node = evt.target;
+      if (!edgeSource) {
+        edgeSource = node;
+        node.addClass('edge-source');
+      } else {
+        if (node.id() === edgeSource.id()) { toast('Cannot connect node to itself'); return; }
+        const existing = cy.edges().filter(e => e.source().id() === edgeSource.id() && e.target().id() === node.id());
+        if (existing.length > 0) { toast('Edge already exists'); exitEdgeMode(); return; }
+        cy.add({
+          group: 'edges',
+          data: { source: edgeSource.id(), target: node.id(), kind: edgeKind }
+        });
+        const kindLabel = edgeKind === 'coreq' ? ' (coreq)' : '';
+        toast('Edge: ' + edgeSource.id() + ' \u2192 ' + node.id() + kindLabel);
+        exitEdgeMode();
+      }
+    });
+
+    // ══════════════════════════════════════
+    //  DELETE / CLEAR / FIT / LAYOUT
+    // ══════════════════════════════════════
+    function deleteSelected() {
+      const sel = cy.$(':selected');
+      if (sel.length === 0) { toast('Nothing selected'); return; }
+      sel.remove();
+      toast('Deleted ' + sel.length + ' element(s)');
+      refreshNodeList();
+      updateSidebar();
+    }
+    document.getElementById('btn-delete').addEventListener('click', deleteSelected);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') {
+        deleteSelected();
+      }
+    });
+
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      if (cy.elements().length === 0) return;
+      if (!confirm('Clear the entire graph?')) return;
+      cy.elements().remove();
+      refreshNodeList();
+      updateSidebar();
+      toast('Graph cleared');
+    });
+
+    document.getElementById('btn-fit').addEventListener('click', () => {
+      cy.fit(cy.elements(), 40);
+    });
+    document.getElementById('btn-layout').addEventListener('click', () => {
+      if (cy.nodes().length === 0) return;
+      cy.layout({
+        name: 'breadthfirst',
+        directed: true,
+        spacingFactor: 1.4,
+        padding: 40,
+        animate: true,
+        animationDuration: 400,
+      }).run();
+    });
+
+    // ══════════════════════════════════════
+    //  SIDEBAR: DYNAMIC META EDITOR
+    // ══════════════════════════════════════
+    cy.on('select unselect', () => {
+      if (edgeMode) return;
+      updateSidebar();
+    });
+
+    function updateSidebar() {
+      const selectedNodes = cy.nodes(':selected');
+      const count = selectedNodes.length;
+
+      if (count === 0) {
+        document.getElementById('no-selection').style.display = '';
+        document.getElementById('selection-panel').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('no-selection').style.display = 'none';
+      document.getElementById('selection-panel').style.display = '';
+      document.getElementById('selection-count').textContent = count + ' node' + (count > 1 ? 's' : '') + ' selected';
+
+      const container = document.getElementById('meta-fields-container');
+      let html = '';
+
+      // Course Number field (only editable for single selection)
+      const isSingle = count === 1;
+      const idVal = isSingle ? selectedNodes[0].id() : '(multiple)';
+      html += `<div class="field">
+        <label>Course Number</label>
+        <input type="text" id="meta-id" value="${idVal}" ${isSingle ? '' : 'disabled'} placeholder="Course number" />
+      </div>`;
+
+      // Dynamic fields from schema
+      metaFields.forEach(f => {
+        let fieldVal = '';
+        let placeholder = f.key;
+
+        if (isSingle) {
+          const raw = selectedNodes[0].data(f.key);
+          fieldVal = raw !== undefined ? raw : '';
+        } else {
+          const vals = [...new Set(selectedNodes.map(n => JSON.stringify(n.data(f.key))))];
+          if (vals.length === 1) {
+            fieldVal = selectedNodes[0].data(f.key);
+          } else {
+            placeholder = '(mixed — leave empty to skip)';
+          }
+        }
+
+        if (f.type === 'bool') {
+          const checked = fieldVal === true || fieldVal === 'true';
+          const mixed = !isSingle && [...new Set(selectedNodes.map(n => n.data(f.key)))].length > 1;
+          html += `<div class="field">
+            <label>${f.key} ${mixed ? '<span style="color:var(--text-dim)">(mixed)</span>' : ''}</label>
+            <select data-field-key="${f.key}" data-field-type="${f.type}">
+              ${mixed ? '<option value="">— keep mixed —</option>' : ''}
+              <option value="true" ${checked ? 'selected' : ''}>true</option>
+              <option value="false" ${!checked && !mixed ? 'selected' : ''}>false</option>
+            </select>
+          </div>`;
+        } else {
+          const inputType = f.type === 'int' ? 'number' : 'text';
+          html += `<div class="field">
+            <label>${f.key}</label>
+            <input type="${inputType}" data-field-key="${f.key}" data-field-type="${f.type}" 
+                   value="${fieldVal}" placeholder="${placeholder}" />
+          </div>`;
+        }
+      });
+
+      container.innerHTML = html;
+    }
+
+    // ── Apply Metadata ──
+    document.getElementById('btn-apply-meta').addEventListener('click', () => {
+      const selectedNodes = cy.nodes(':selected');
+      if (selectedNodes.length === 0) return;
+      const isSingle = selectedNodes.length === 1;
+
+      // Handle course number rename (single only)
+      if (isSingle) {
+        const newId = document.getElementById('meta-id').value.trim();
+        const node = selectedNodes[0];
+        if (newId && newId !== node.id()) {
+          if (cy.getElementById(newId).length > 0) {
+            toast('Node "' + newId + '" already exists');
+            return;
+          }
+          const pos = node.position();
+          const oldData = { ...node.data() };
+          const edges = node.connectedEdges().map(e => ({
+            source: e.source().id() === node.id() ? newId : e.source().id(),
+            target: e.target().id() === node.id() ? newId : e.target().id(),
+            kind: e.data('kind') || 'prereq',
+          }));
+          node.remove();
+
+          // Gather new field values
+          const newData = { id: newId };
+          document.querySelectorAll('[data-field-key]').forEach(input => {
+            const key = input.dataset.fieldKey;
+            const type = input.dataset.fieldType;
+            const val = input.value;
+            if (val !== '') {
+              newData[key] = parseFieldValue(val, type);
+            } else {
+              newData[key] = oldData[key];
+            }
+          });
+
+          cy.add({ group: 'nodes', data: newData, position: pos });
+          edges.forEach(ed => cy.add({ group: 'edges', data: ed }));
+          cy.getElementById(newId).select();
+          toast('Metadata updated');
+          refreshNodeList();
+          return;
+        }
+      }
+
+      // Apply field values
+      document.querySelectorAll('[data-field-key]').forEach(input => {
+        const key = input.dataset.fieldKey;
+        const type = input.dataset.fieldType;
+        const val = input.value;
+        if (val === '' && !isSingle) return; // skip empty in multi-select
+        const parsed = parseFieldValue(val === '' ? metaFields.find(f => f.key === key)?.defaultValue || '' : val, type);
+        selectedNodes.forEach(n => n.data(key, parsed));
+      });
+
+      toast('Updated ' + selectedNodes.length + ' node(s)');
+      refreshNodeList();
+    });
+
+    // ══════════════════════════════════════
+    //  NODE LIST
+    // ══════════════════════════════════════
+    function refreshNodeList() {
+      const container = document.getElementById('node-list');
+      const nodes = cy.nodes();
+      if (nodes.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="padding:12px;">No nodes yet.</div>';
+        return;
+      }
+      const selectedIds = new Set(cy.nodes(':selected').map(n => n.id()));
+      let html = '';
+      nodes.sort((a, b) => a.id().localeCompare(b.id()));
+      nodes.forEach(n => {
+        const sel = selectedIds.has(n.id()) ? ' selected' : '';
+        const credits = n.data('credits') ?? 0;
+        const cat = n.data('category') || 'unknown';
+        // build tooltip with all fields
+        let tip = `Course: ${n.id()}`;
+        metaFields.forEach(f => {
+          tip += `\n${f.key}: ${n.data(f.key) ?? getFieldDefault(f)}`;
+        });
+        html += `<div class="node-list-item${sel}" data-node-id="${n.id()}" title="${tip}">
+          <strong>${n.id()}</strong> &nbsp;
+          <span style="color:var(--text-dim);font-size:11px;">${credits} cr &middot; ${cat}</span>
+        </div>`;
+      });
+      container.innerHTML = html;
+
+      container.querySelectorAll('.node-list-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          const id = item.dataset.nodeId;
+          const node = cy.getElementById(id);
+          if (!e.shiftKey) cy.nodes().unselect();
+          node.select();
+          cy.animate({ center: { eles: node }, duration: 300 });
+        });
+      });
+    }
+
+    // ── Double-click to edit ──
+    cy.on('dbltap', 'node', function (evt) {
+      const node = evt.target;
+      cy.nodes().unselect();
+      node.select();
+      updateSidebar();
+      // focus first editable meta field
+      const firstInput = document.querySelector('#meta-fields-container input, #meta-fields-container select');
+      if (firstInput) firstInput.focus();
+    });
+
+    // ══════════════════════════════════════
+    //  SAVE / LOAD  (File System Access API)
+    // ══════════════════════════════════════
+    let currentFileHandle = null;          // remembers the open / last-saved file
+    const fsAccessSupported = ('showSaveFilePicker' in window);
+
+    const jsonFileOpts = {
+      types: [{ description: 'JSON Files', accept: { 'application/json': ['.json'] } }],
+    };
+
+    function buildSaveData() {
+      const nodes = cy.nodes().map(n => ({
+        id: n.id(),
+        position: n.position(),
+        data: { ...n.data() },
+      }));
+      const edges = cy.edges().map(e => ({
+        source: e.source().id(),
+        target: e.target().id(),
+        kind: e.data('kind') || 'prereq',
+      }));
+      return {
+        version: 1,
+        metaFields: metaFields,
+        nodes: nodes,
+        edges: edges,
+      };
+    }
+
+    // Write JSON to a file handle
+    async function writeToHandle(handle) {
+      const json = JSON.stringify(buildSaveData(), null, 2);
+      const writable = await handle.createWritable();
+      await writable.write(json);
+      await writable.close();
+      const name = handle.name || 'file';
+      toast('Saved to ' + name);
+    }
+
+    // ── Save (same file) ──
+    async function doSave() {
+      if (fsAccessSupported && currentFileHandle) {
+        // We already have a handle → overwrite
+        try {
+          await writeToHandle(currentFileHandle);
+          return;
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+          // permission revoked etc. — fall through to Save As
+          console.warn('Could not write to handle, falling back to Save As', err);
+        }
+      }
+      // No handle yet or API unsupported → behave like Save As
+      await doSaveAs();
+    }
+
+    // ── Save As (always pick a new file) ──
+    async function doSaveAs() {
+      if (fsAccessSupported) {
+        try {
+          const handle = await window.showSaveFilePicker({
+            suggestedName: 'course_graph.json',
+            ...jsonFileOpts,
+          });
+          currentFileHandle = handle;
+          await writeToHandle(handle);
+        } catch (err) {
+          if (err.name === 'AbortError') return; // user cancelled
+          toast('Save failed: ' + err.message);
+        }
+      } else {
+        // Fallback: classic download
+        const json = JSON.stringify(buildSaveData(), null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'course_graph.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        toast('Graph downloaded as course_graph.json');
+      }
+    }
+
+    // ── Load ──
+    async function doLoadPicker() {
+      if (fsAccessSupported) {
+        try {
+          const [handle] = await window.showOpenFilePicker({ ...jsonFileOpts, multiple: false });
+          currentFileHandle = handle;            // remember for Save
+          const file = await handle.getFile();
+          doLoadFile(file);
+        } catch (err) {
+          if (err.name === 'AbortError') return;
+          toast('Load failed: ' + err.message);
+        }
+      } else {
+        // Fallback: classic file input
+        document.getElementById('file-load').click();
+      }
+    }
+
+    function doLoadFile(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const saveData = JSON.parse(e.target.result);
+          if (!saveData.nodes || !saveData.metaFields) {
+            toast('Invalid save file');
+            return;
+          }
+
+          // Clear current graph
+          cy.elements().remove();
+
+          // Restore field schema
+          metaFields = saveData.metaFields;
+          renderFieldTags();
+
+          // Restore nodes
+          saveData.nodes.forEach(n => {
+            cy.add({
+              group: 'nodes',
+              data: n.data,
+              position: n.position,
+            });
+          });
+
+          // Restore edges
+          if (saveData.edges) {
+            saveData.edges.forEach(ed => {
+              cy.add({
+                group: 'edges',
+                data: { source: ed.source, target: ed.target, kind: ed.kind || 'prereq' },
+              });
+            });
+          }
+
+          refreshNodeList();
+          updateSidebar();
+          cy.fit(cy.elements(), 40);
+          toast('Loaded ' + (file.name || 'graph') + ' (' + saveData.nodes.length + ' nodes, ' + (saveData.edges?.length || 0) + ' edges)');
+        } catch (err) {
+          toast('Error loading file: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    document.getElementById('btn-save').addEventListener('click', doSave);
+    document.getElementById('btn-save-as').addEventListener('click', doSaveAs);
+    document.getElementById('btn-load').addEventListener('click', doLoadPicker);
+    document.getElementById('file-load').addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        currentFileHandle = null;  // classic input doesn't give a handle
+        doLoadFile(e.target.files[0]);
+        e.target.value = '';
+      }
+    });
+
+    // Ctrl+S = Save,  Ctrl+Shift+S = Save As
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          doSaveAs();
+        } else {
+          doSave();
+        }
+      }
+    });
+
+    // ══════════════════════════════════════
+    //  EXPORT NETWORKX
+    // ══════════════════════════════════════
+    document.getElementById('btn-export').addEventListener('click', () => {
+      const code = generateNetworkXCode();
+      document.getElementById('export-code').textContent = code;
+      document.getElementById('export-modal').classList.add('active');
+    });
+
+    document.getElementById('btn-close-modal').addEventListener('click', () => {
+      document.getElementById('export-modal').classList.remove('active');
+    });
+    document.getElementById('export-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) e.currentTarget.classList.remove('active');
+    });
+
+    document.getElementById('btn-copy-code').addEventListener('click', () => {
+      navigator.clipboard.writeText(document.getElementById('export-code').textContent);
+      toast('Copied to clipboard!');
+    });
+
+    document.getElementById('btn-download-code').addEventListener('click', () => {
+      const code = document.getElementById('export-code').textContent;
+      const blob = new Blob([code], { type: 'text/plain' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'course_graph.py';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('Downloaded course_graph.py');
+    });
+
+    function generateNetworkXCode() {
+      const nodes = cy.nodes();
+      const edges = cy.edges();
+
+      let lines = [];
+      lines.push('import networkx as nx');
+      lines.push('');
+      lines.push('# Create directed graph');
+      lines.push('G = nx.DiGraph()');
+      lines.push('');
+
+      if (nodes.length > 0) {
+        lines.push('# Add nodes with metadata');
+        nodes.forEach(n => {
+          const id = n.id();
+          let attrs = [];
+          metaFields.forEach(f => {
+            const val = n.data(f.key);
+            if (f.type === 'int') {
+              attrs.push(`${f.key}=${val ?? 0}`);
+            } else if (f.type === 'bool') {
+              attrs.push(`${f.key}=${val ? 'True' : 'False'}`);
+            } else {
+              const escaped = String(val ?? '').replace(/'/g, "\\'");
+              attrs.push(`${f.key}='${escaped}'`);
+            }
+          });
+          lines.push(`G.add_node('${id}', ${attrs.join(', ')})`);
+        });
+      }
+
+      if (edges.length > 0) {
+        lines.push('');
+        lines.push('# Add edges (kind: prereq = prerequisite, coreq = corequisite)');
+        edges.forEach(e => {
+          const kind = e.data('kind') || 'prereq';
+          lines.push(`G.add_edge('${e.source().id()}', '${e.target().id()}', kind='${kind}')`);
+        });
+      }
+
+      return lines.join('\n');
+    }
+
+    // ══════════════════════════════════════
+    //  KEYBOARD
+    // ══════════════════════════════════════
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (edgeMode) exitEdgeMode();
+        document.getElementById('export-modal').classList.remove('active');
+      }
+    });
+
+    // ══════════════════════════════════════
+    //  INIT
+    // ══════════════════════════════════════
+    renderFieldTags();
+  </script>
+</body>
+</html>

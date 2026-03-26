@@ -1,0 +1,79 @@
+{
+  "uta_id": "jxc3105",
+  "degree": "cs",
+  "selected_keywords": [
+    "autonomy",
+    "computer vision",
+    "cryptography",
+    "data"
+  ],
+  "certificate_scores": {
+    "cyber_security": 1,
+    "unmanned_vehicle_systems": 1,
+    "fundamentals_of_ai": 2
+  },
+  "top_certificates": [
+    "fundamentals_of_ai"
+  ],
+  "completed_courses": [
+    "cse1310",
+    "engl1301",
+    "math1426",
+    "univ1131"
+  ],
+  "in_progress_courses": [],
+  "electives_met": {
+    "security": false,
+    "tech": false,
+    "gened_history": false,
+    "tech_options": false,
+    "gened_pols": false,
+    "gened_social": false,
+    "gened_creative_arts": false,
+    "gened_culture": false
+  },
+  "updates": [
+    {
+      "timestamp": "2026-03-20T15:10:50",
+      "action": "account_created",
+      "details": {
+        "degree": "cs",
+        "selected_keywords": [
+          "autonomy",
+          "computer vision",
+          "cryptography",
+          "data"
+        ],
+        "top_certificates": [
+          "fundamentals_of_ai"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-03-20T15:11:59",
+      "action": "plan_selected",
+      "details": {
+        "option": "NO_GEN_ED",
+        "courses": [
+          "univ1131",
+          "cse1310",
+          "math1426",
+          "engl1301"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-03-20T15:12:29",
+      "action": "in_progress_moved_to_completed",
+      "details": {
+        "courses": [
+          "cse1310",
+          "engl1301",
+          "math1426",
+          "univ1131"
+        ],
+        "mode": "all"
+      }
+    }
+  ]
+}

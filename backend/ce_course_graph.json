@@ -1,0 +1,742 @@
+{
+  "version": 1,
+  "metaFields": [
+    {
+      "key": "name",
+      "type": "str",
+      "defaultValue": "unknown",
+      "builtIn": true
+    },
+    {
+      "key": "credits",
+      "type": "int",
+      "defaultValue": 0,
+      "builtIn": true
+    },
+    {
+      "key": "category",
+      "type": "str",
+      "defaultValue": "unknown",
+      "builtIn": true
+    }
+  ],
+  "nodes": [
+    {
+      "id": "cse1106",
+      "position": {
+        "x": 629.3571127357584,
+        "y": 369.96034171153286
+      },
+      "data": {
+        "id": "cse1106",
+        "name": "unknown",
+        "credits": 1,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "univ1131",
+      "position": {
+        "x": 382.85843686734466,
+        "y": 287.5029151726318
+      },
+      "data": {
+        "id": "univ1131",
+        "name": "unknown",
+        "credits": 1,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse2315",
+      "position": {
+        "x": 742.7659088687875,
+        "y": 303.88752638290634
+      },
+      "data": {
+        "id": "cse2315",
+        "name": "unknown",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse1310",
+      "position": {
+        "x": 499.82245719403767,
+        "y": 234.13123982890602
+      },
+      "data": {
+        "id": "cse1310",
+        "name": "unknown",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse1320",
+      "position": {
+        "x": 630.012811067034,
+        "y": 166.87013207554912
+      },
+      "data": {
+        "id": "cse1320",
+        "name": "unknown",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse2312",
+      "position": {
+        "x": 916.8085702343682,
+        "y": 322.4671110961533
+      },
+      "data": {
+        "id": "cse2312",
+        "name": "unknown",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse1326",
+      "position": {
+        "x": 683.6856749492376,
+        "y": -9.818729002169675
+      },
+      "data": {
+        "id": "cse1326",
+        "name": "unknown",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse2441",
+      "position": {
+        "x": 888.9740747943712,
+        "y": 53.2227168265095
+      },
+      "data": {
+        "id": "cse2441",
+        "name": "unknown",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse3318",
+      "position": {
+        "x": 930.1565172964101,
+        "y": 140.0026633506737
+      },
+      "data": {
+        "id": "cse3318",
+        "name": "unknown",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse3380",
+      "position": {
+        "x": 999.9143644964051,
+        "y": 239.43673041062476
+      },
+      "data": {
+        "id": "cse3380",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "math1426",
+      "position": {
+        "x": 343.90608302389626,
+        "y": 104.41269017242314
+      },
+      "data": {
+        "id": "math1426",
+        "name": "unknown",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "math2425",
+      "position": {
+        "x": 486.15850673569184,
+        "y": -76.68230062477197
+      },
+      "data": {
+        "id": "math2425",
+        "name": "unknown",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "phys1443",
+      "position": {
+        "x": 380.7938314634588,
+        "y": -210.90119984423632
+      },
+      "data": {
+        "id": "phys1443",
+        "name": "unknown",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "engl1301",
+      "position": {
+        "x": 167.26972175216005,
+        "y": 154.26046255157698
+      },
+      "data": {
+        "id": "engl1301",
+        "name": "unknown",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "phys1444",
+      "position": {
+        "x": 586.9920383368561,
+        "y": -189.80754774531118
+      },
+      "data": {
+        "id": "phys1444",
+        "name": "unknown",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse2440",
+      "position": {
+        "x": 832.1460847454011,
+        "y": -213.69995712380188
+      },
+      "data": {
+        "id": "cse2440",
+        "name": "unknown",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "math2326",
+      "position": {
+        "x": 736.2537490925025,
+        "y": -138.80508452253935
+      },
+      "data": {
+        "id": "math2326",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "ie3301",
+      "position": {
+        "x": 797.8995917213218,
+        "y": -55.20619475610137
+      },
+      "data": {
+        "id": "ie3301",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3320",
+      "position": {
+        "x": 1106.237195791885,
+        "y": 550.6702496806221
+      },
+      "data": {
+        "id": "cse3320",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3341",
+      "position": {
+        "x": 1054.9775721719225,
+        "y": -81.77239080768369
+      },
+      "data": {
+        "id": "cse3341",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3442",
+      "position": {
+        "x": 1212.957314070866,
+        "y": 417.47613666040536
+      },
+      "data": {
+        "id": "cse3442",
+        "name": "unknown",
+        "credits": 4,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3313",
+      "position": {
+        "x": 1262.9595842929998,
+        "y": 135.49451844369872
+      },
+      "data": {
+        "id": "cse3313",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3323",
+      "position": {
+        "x": 997.0709325249139,
+        "y": -170.68741485049546
+      },
+      "data": {
+        "id": "cse3323",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse4342",
+      "position": {
+        "x": 1169.5669896715317,
+        "y": -129.39123716763578
+      },
+      "data": {
+        "id": "cse4342",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "coms2302",
+      "position": {
+        "x": 236.78501424686533,
+        "y": 292.85439169701823
+      },
+      "data": {
+        "id": "coms2302",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3314",
+      "position": {
+        "x": 301.4471911917088,
+        "y": 389.8189210317557
+      },
+      "data": {
+        "id": "cse3314",
+        "name": "unknown",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse4316",
+      "position": {
+        "x": 712.4262653339774,
+        "y": 489.0618523020595
+      },
+      "data": {
+        "id": "cse4316",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4323",
+      "position": {
+        "x": 1434.2720140192994,
+        "y": 393.30434909814306
+      },
+      "data": {
+        "id": "cse4323",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4317",
+      "position": {
+        "x": 1380.0395247741371,
+        "y": 219.3140517695701
+      },
+      "data": {
+        "id": "cse4317",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "tech1",
+      "position": {
+        "x": 24.26426166575783,
+        "y": 29.75752523598493
+      },
+      "data": {
+        "id": "tech1",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "tech2",
+      "position": {
+        "x": 20.961831059292717,
+        "y": 136.54372084054705
+      },
+      "data": {
+        "id": "tech2",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "tech3",
+      "position": {
+        "x": 23.140761016222974,
+        "y": 269.1795779850062
+      },
+      "data": {
+        "id": "tech3",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "history1",
+      "position": {
+        "x": -99.14556557035665,
+        "y": 61.37175884073224
+      },
+      "data": {
+        "id": "history1",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "history2",
+      "position": {
+        "x": -103.01380767741819,
+        "y": 165.29843235369614
+      },
+      "data": {
+        "id": "history2",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "pols2311",
+      "position": {
+        "x": -99.86899924467234,
+        "y": 291.0343678498508
+      },
+      "data": {
+        "id": "pols2311",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "pols2312",
+      "position": {
+        "x": -103.78614752734947,
+        "y": 387.2271761699275
+      },
+      "data": {
+        "id": "pols2312",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "creative_arts",
+      "position": {
+        "x": -96.7375519964771,
+        "y": -21.730861931595907
+      },
+      "data": {
+        "id": "creative_arts",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "social",
+      "position": {
+        "x": -101.09885490055365,
+        "y": -132.4393882166446
+      },
+      "data": {
+        "id": "social",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "culture",
+      "position": {
+        "x": -103.74156655300968,
+        "y": 481.5254074280186
+      },
+      "data": {
+        "id": "culture",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "science",
+      "position": {
+        "x": -104.38301667139187,
+        "y": 612.4072682328422
+      },
+      "data": {
+        "id": "science",
+        "name": "unknown",
+        "credits": 4,
+        "category": "unknown"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "univ1131",
+      "target": "cse1310",
+      "kind": "coreq"
+    },
+    {
+      "source": "cse1310",
+      "target": "cse2315",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1310",
+      "target": "cse1106",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1310",
+      "target": "cse1320",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1106",
+      "target": "cse2312",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1320",
+      "target": "cse3318",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1320",
+      "target": "cse1326",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1320",
+      "target": "cse2441",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1320",
+      "target": "cse2312",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2315",
+      "target": "cse2441",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2315",
+      "target": "cse3318",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2315",
+      "target": "cse3380",
+      "kind": "prereq"
+    },
+    {
+      "source": "math1426",
+      "target": "math2425",
+      "kind": "prereq"
+    },
+    {
+      "source": "math1426",
+      "target": "phys1443",
+      "kind": "prereq"
+    },
+    {
+      "source": "math1426",
+      "target": "cse2315",
+      "kind": "prereq"
+    },
+    {
+      "source": "phys1443",
+      "target": "phys1444",
+      "kind": "prereq"
+    },
+    {
+      "source": "math2425",
+      "target": "phys1444",
+      "kind": "coreq"
+    },
+    {
+      "source": "phys1444",
+      "target": "cse2440",
+      "kind": "prereq"
+    },
+    {
+      "source": "math2425",
+      "target": "math2326",
+      "kind": "prereq"
+    },
+    {
+      "source": "math2425",
+      "target": "ie3301",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2312",
+      "target": "cse3320",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2441",
+      "target": "cse3341",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2312",
+      "target": "cse3442",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2441",
+      "target": "cse3442",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3318",
+      "target": "cse3313",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3380",
+      "target": "cse3313",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2440",
+      "target": "cse3323",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2440",
+      "target": "cse3442",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3323",
+      "target": "cse4342",
+      "kind": "prereq"
+    },
+    {
+      "source": "engl1301",
+      "target": "coms2302",
+      "kind": "prereq"
+    },
+    {
+      "source": "coms2302",
+      "target": "cse3314",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3442",
+      "target": "cse4342",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3442",
+      "target": "cse4316",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3313",
+      "target": "cse4342",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3320",
+      "target": "cse4323",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3320",
+      "target": "cse4316",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3318",
+      "target": "cse3314",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3314",
+      "target": "cse4316",
+      "kind": "coreq"
+    },
+    {
+      "source": "cse4316",
+      "target": "cse4317",
+      "kind": "prereq"
+    }
+  ]
+}

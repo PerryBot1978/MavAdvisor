@@ -1,0 +1,832 @@
+{
+  "version": 1,
+  "metaFields": [
+    {
+      "key": "name",
+      "type": "str",
+      "defaultValue": "unknown",
+      "builtIn": true
+    },
+    {
+      "key": "credits",
+      "type": "int",
+      "defaultValue": 0,
+      "builtIn": true
+    },
+    {
+      "key": "category",
+      "type": "str",
+      "defaultValue": "unknown",
+      "builtIn": true
+    }
+  ],
+  "nodes": [
+    {
+      "id": "coms2302",
+      "position": {
+        "x": 264.7779010417749,
+        "y": 139.71501336054018
+      },
+      "data": {
+        "id": "coms2302",
+        "name": "PROFESSIONAL AND TECHNICAL COMMUNICATION",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "creative_arts",
+      "position": {
+        "x": -103.29661908980962,
+        "y": 242.06980998536864
+      },
+      "data": {
+        "id": "creative_arts",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "cse1106",
+      "position": {
+        "x": 681.7598259984737,
+        "y": 183.35373594505302
+      },
+      "data": {
+        "id": "cse1106",
+        "name": "INTRO TO CSE",
+        "credits": 1,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse1310",
+      "position": {
+        "x": 928.1930238196413,
+        "y": 154.40434574979935
+      },
+      "data": {
+        "id": "cse1310",
+        "name": "INTRO TO PROGRAMMING",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse1320",
+      "position": {
+        "x": 1161.7598259984738,
+        "y": 183.35373594505302
+      },
+      "data": {
+        "id": "cse1320",
+        "name": "INTERMEDIATE PROGRAMMING",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse1325",
+      "position": {
+        "x": 1401.7598259984738,
+        "y": 183.35373594505302
+      },
+      "data": {
+        "id": "cse1325",
+        "name": "OBJECT-ORIENTED PROGRAMMING",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse2312",
+      "position": {
+        "x": 215.8384339862633,
+        "y": 344.4716479267374
+      },
+      "data": {
+        "id": "cse2312",
+        "name": "COMPUTER ORGANIZATION",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse2315",
+      "position": {
+        "x": 441.75982599847373,
+        "y": 323.353735945053
+      },
+      "data": {
+        "id": "cse2315",
+        "name": "DISCRETE STRUCTURES",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse3302",
+      "position": {
+        "x": 680,
+        "y": 260
+      },
+      "data": {
+        "id": "cse3302",
+        "name": "PROGRAMMING LANGUAGES",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3310",
+      "position": {
+        "x": 920,
+        "y": 260
+      },
+      "data": {
+        "id": "cse3310",
+        "name": "INTRO TO SOFTWARE ENGINEERING",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3314",
+      "position": {
+        "x": 543.2017248631003,
+        "y": 127.62776743637309
+      },
+      "data": {
+        "id": "cse3314",
+        "name": "PROFESSIONAL PRACTICES",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3315",
+      "position": {
+        "x": 1400,
+        "y": 260
+      },
+      "data": {
+        "id": "cse3315",
+        "name": "THEORETICAL CS",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3318",
+      "position": {
+        "x": 201.75982599847373,
+        "y": 463.353735945053
+      },
+      "data": {
+        "id": "cse3318",
+        "name": "ALGORITHMS & DATA STRUCTURES",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "cse3320",
+      "position": {
+        "x": 440,
+        "y": 400
+      },
+      "data": {
+        "id": "cse3320",
+        "name": "OPERATING SYSTEMS",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3330",
+      "position": {
+        "x": 680,
+        "y": 441.1800013324579
+      },
+      "data": {
+        "id": "cse3330",
+        "name": "DATABASES",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse3380",
+      "position": {
+        "x": 920,
+        "y": 400
+      },
+      "data": {
+        "id": "cse3380",
+        "name": "LINEAR ALGEBRA",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "cse4303",
+      "position": {
+        "x": 1160,
+        "y": 400
+      },
+      "data": {
+        "id": "cse4303",
+        "name": "COMPUTER GRAPHICS",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4305",
+      "position": {
+        "x": 1400,
+        "y": 400
+      },
+      "data": {
+        "id": "cse4305",
+        "name": "COMPILERS",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4308",
+      "position": {
+        "x": 200,
+        "y": 540
+      },
+      "data": {
+        "id": "cse4308",
+        "name": "ARTIFICIAL INTELLIGENCE",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4316",
+      "position": {
+        "x": 688.2415814917127,
+        "y": 581.45374607341
+      },
+      "data": {
+        "id": "cse4316",
+        "name": "SENIOR DESIGN I",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4317",
+      "position": {
+        "x": 920,
+        "y": 540
+      },
+      "data": {
+        "id": "cse4317",
+        "name": "SENIOR DESIGN II",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4344",
+      "position": {
+        "x": 1160,
+        "y": 540
+      },
+      "data": {
+        "id": "cse4344",
+        "name": "COMPUTER NETWORKS",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4360",
+      "position": {
+        "x": 1400,
+        "y": 540
+      },
+      "data": {
+        "id": "cse4360",
+        "name": "ROBOTICS",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4380",
+      "position": {
+        "x": 200,
+        "y": 680
+      },
+      "data": {
+        "id": "cse4380",
+        "name": "INFORMATION SECURITY",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4381",
+      "position": {
+        "x": 440,
+        "y": 680
+      },
+      "data": {
+        "id": "cse4381",
+        "name": "INFORMATION SECURITY 2",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "cse4382",
+      "position": {
+        "x": 680,
+        "y": 680
+      },
+      "data": {
+        "id": "cse4382",
+        "name": "SECURE PROGRAMMING",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "engl1301",
+      "position": {
+        "x": 525.7281480140863,
+        "y": 25.90715263952634
+      },
+      "data": {
+        "id": "engl1301",
+        "name": "RHETORIC & COMPOSITION",
+        "credits": 3,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "history1",
+      "position": {
+        "x": -96.48515077926548,
+        "y": 939.6550394067335
+      },
+      "data": {
+        "id": "history1",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "history2",
+      "position": {
+        "x": -119.11802553041292,
+        "y": 820
+      },
+      "data": {
+        "id": "history2",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "culture",
+      "position": {
+        "x": -94.38292804742933,
+        "y": 343.01855271644723
+      },
+      "data": {
+        "id": "culture",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "ie3301",
+      "position": {
+        "x": 680,
+        "y": 820
+      },
+      "data": {
+        "id": "ie3301",
+        "name": "ENGINEERING PROBABILITY AND STATISTICS",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "math1426",
+      "position": {
+        "x": 920.0285475817523,
+        "y": 949.1423157804703
+      },
+      "data": {
+        "id": "math1426",
+        "name": "CALCULUS I",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "math2326",
+      "position": {
+        "x": 1160,
+        "y": 820
+      },
+      "data": {
+        "id": "math2326",
+        "name": "CALCULUS III",
+        "credits": 3,
+        "category": "unknown"
+      }
+    },
+    {
+      "id": "math2425",
+      "position": {
+        "x": 1361.9118748321268,
+        "y": 981.0088927551003
+      },
+      "data": {
+        "id": "math2425",
+        "name": "CALCULUS II",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "phys1443",
+      "position": {
+        "x": 200,
+        "y": 960
+      },
+      "data": {
+        "id": "phys1443",
+        "name": "TECHNICAL PHYSICS I",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "phys1444",
+      "position": {
+        "x": 427.88105108294945,
+        "y": 1079.458210753784
+      },
+      "data": {
+        "id": "phys1444",
+        "name": "TECHNICAL PHYSICS II",
+        "credits": 4,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "pols2311",
+      "position": {
+        "x": -116.80401405730419,
+        "y": 571.5084906586277
+      },
+      "data": {
+        "id": "pols2311",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "pols2312",
+      "position": {
+        "x": -106.72756040219797,
+        "y": 686.4702638310747
+      },
+      "data": {
+        "id": "pols2312",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "univ1131",
+      "position": {
+        "x": 1100.6444466973837,
+        "y": 34.249570940549404
+      },
+      "data": {
+        "id": "univ1131",
+        "name": "STUDENT SUCCESS",
+        "credits": 1,
+        "category": "pre_professional"
+      }
+    },
+    {
+      "id": "social",
+      "position": {
+        "x": -106.73520528658055,
+        "y": 460.667742437436
+      },
+      "data": {
+        "id": "social",
+        "name": "unknown",
+        "credits": 3,
+        "category": "general_education"
+      }
+    },
+    {
+      "id": "tech1",
+      "position": {
+        "x": 74.31168383686588,
+        "y": 471.99765257168104
+      },
+      "data": {
+        "id": "tech1",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "tech2",
+      "position": {
+        "x": 68.42781163557872,
+        "y": 572.9932474190203
+      },
+      "data": {
+        "id": "tech2",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "tech3",
+      "position": {
+        "x": 71.02871793881073,
+        "y": 669.7405345534472
+      },
+      "data": {
+        "id": "tech3",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "tech4",
+      "position": {
+        "x": 63.21873930837939,
+        "y": 765.0244607457759
+      },
+      "data": {
+        "id": "tech4",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    },
+    {
+      "id": "tech5",
+      "position": {
+        "x": 47.19186037724808,
+        "y": 869.5312614527778
+      },
+      "data": {
+        "id": "tech5",
+        "name": "unknown",
+        "credits": 3,
+        "category": "professional"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "phys1443",
+      "target": "phys1444",
+      "kind": "prereq"
+    },
+    {
+      "source": "coms2302",
+      "target": "cse3314",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1106",
+      "target": "cse2312",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1310",
+      "target": "cse1106",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1310",
+      "target": "cse1320",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1310",
+      "target": "cse2315",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1320",
+      "target": "cse1325",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1320",
+      "target": "cse2312",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1320",
+      "target": "cse3318",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1325",
+      "target": "cse3302",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1325",
+      "target": "cse3310",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse1325",
+      "target": "cse3330",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2312",
+      "target": "cse3302",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2312",
+      "target": "cse3320",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2315",
+      "target": "cse3310",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2315",
+      "target": "cse3315",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2315",
+      "target": "cse3318",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse2315",
+      "target": "cse3380",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3302",
+      "target": "cse4305",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3310",
+      "target": "cse4316",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3315",
+      "target": "cse4305",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3318",
+      "target": "cse3302",
+      "kind": "prereq"
+    },
+    {
+      "source": "math2425",
+      "target": "phys1444",
+      "kind": "coreq"
+    },
+    {
+      "source": "cse3318",
+      "target": "cse3330",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3320",
+      "target": "cse4316",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3320",
+      "target": "cse4344",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3320",
+      "target": "cse4360",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3320",
+      "target": "cse4380",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3320",
+      "target": "cse4381",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3320",
+      "target": "cse4382",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3380",
+      "target": "cse4303",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3380",
+      "target": "cse4360",
+      "kind": "prereq"
+    },
+    {
+      "source": "univ1131",
+      "target": "cse1310",
+      "kind": "coreq"
+    },
+    {
+      "source": "cse4316",
+      "target": "cse4317",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse4344",
+      "target": "cse4381",
+      "kind": "coreq"
+    },
+    {
+      "source": "engl1301",
+      "target": "coms2302",
+      "kind": "prereq"
+    },
+    {
+      "source": "ie3301",
+      "target": "cse4308",
+      "kind": "prereq"
+    },
+    {
+      "source": "math1426",
+      "target": "cse2315",
+      "kind": "prereq"
+    },
+    {
+      "source": "math1426",
+      "target": "math2425",
+      "kind": "prereq"
+    },
+    {
+      "source": "math1426",
+      "target": "phys1443",
+      "kind": "prereq"
+    },
+    {
+      "source": "math2425",
+      "target": "ie3301",
+      "kind": "prereq"
+    },
+    {
+      "source": "math2425",
+      "target": "math2326",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3318",
+      "target": "cse3314",
+      "kind": "prereq"
+    },
+    {
+      "source": "cse3314",
+      "target": "cse4316",
+      "kind": "coreq"
+    }
+  ]
+}
