@@ -1,11 +1,11 @@
-from flask import Flask
+from flask import Flask, redirect
 from waitress import serve
 from shared import app
 
-import admin_endpoint, user_endpoint
+import admin_endpoint, user_endpoint, chatbot
 
 @app.route('/')
-def hello_world():
-    return '<b>Hello World!</b>'
+def root():
+    return redirect('/user/dashboard', code=302)
 
-serve(app, listen='*:8080')
+# serve(app, listen='*:8080')

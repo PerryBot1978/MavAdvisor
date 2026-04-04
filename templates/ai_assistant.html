@@ -164,27 +164,11 @@
             </div>
             
             <div class="chat-messages" id="chatMessages">
-                <!-- Example conversation -->
                 <div class="message assistant-message">
                     <div class="message-sender">AI Assistant</div>
                     Hello! I'm your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?
                 </div>
-                <div class="message user-message">
-                    <div class="message-sender">You</div>
-                    What are the prerequisites for CSE 3310 Algorithms?
-                </div>
-                <div class="message assistant-message">
-                    <div class="message-sender">AI Assistant</div>
-                    CSE 3310 Algorithms typically requires CSE 2340 Data Structures and MATH 2326 Calculus III as prerequisites. You should also have completed CSE 1320 Intermediate Programming. Check the latest course catalog for any updates.
-                </div>
-                <div class="message user-message">
-                    <div class="message-sender">You</div>
-                    Can you suggest a balanced course load for next semester?
-                </div>
-                <div class="message assistant-message">
-                    <div class="message-sender">AI Assistant</div>
-                    Based on your progress, I recommend: CSE 3310 Algorithms, MATH 3310 Linear Algebra, and a core elective like HIST 1302. This balances technical difficulty and credit hours. Would you like me to generate a full schedule?
-                </div>
+
                 <!-- Typing indicator (hidden by default) -->
                 <div id="typingIndicator" class="typing-indicator" style="display: none;">
                     <span class="dot"></span>
@@ -220,6 +204,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const typingIndicator = document.getElementById('typingIndicator');
     const clearChatButton = document.querySelector('button[style*="background-color: #6c757d"]');
     
+    // Conversation history array matching OpenAI format
+    let conversationHistory = [
+        {
+            role: 'assistant',
+            content: 'Hello! I\'m your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?'
+        }
+    ];
+    
     function addMessage(text, isUser) {
         const messageDiv = document.createElement('div');
         messageDiv.className = isUser ? 'message user-message' : 'message assistant-message';
@@ -235,6 +227,12 @@ document.addEventListener('DOMContentLoaded', function() {
         messageDiv.appendChild(textDiv);
         chatMessages.appendChild(messageDiv);
         
+        // Add to conversation history
+        conversationHistory.push({
+            role: isUser ? 'user' : 'assistant',
+            content: text
+        });
+        
         // Scroll to bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -244,14 +242,30 @@ document.addEventListener('DOMContentLoaded', function() {
         typingIndicator.style.display = 'block';
         chatMessages.scrollTop = chatMessages.scrollHeight;
         
-        // Simulate AI thinking time
-        setTimeout(() => {
+        // Send request to chatbot endpoint with full conversation history
+        fetch('/chatbot/request', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ messages: conversationHistory })
+        })
+        .then(response => response.json())
+        .then(data => {
             typingIndicator.style.display = 'none';
             
-            // Simple mock responses based on keywords
+            if (data.error) {
+                addMessage('Error: ' + data.error, false);
+            } else {
+                addMessage(data.response, false);
+            }
+        })
+        .catch(error => {
+            typingIndicator.style.display = 'none';
+            // Fallback to mock response if API fails
             let response = "I understand you're asking about \"" + userText + "\". As an AI assistant, I can help with degree planning, course prerequisites, and academic resources. For specific questions, please consult your academic advisor or the official university catalog.";
             
-            // Example keyword matching
+            // Example keyword matching (same as before)
             if (userText.toLowerCase().includes('prerequisite') || userText.toLowerCase().includes('requirement')) {
                 response = "Prerequisites vary by course. Check the course description in the university catalog or consult your academic advisor for the most accurate and up‑to‑date information.";
             } else if (userText.toLowerCase().includes('schedule') || userText.toLowerCase().includes('course load')) {
@@ -263,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             addMessage(response, false);
-        }, 1000 + Math.random() * 1500);
+        });
     }
     
     // Send message on button click
@@ -294,6 +308,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     messages[i].remove();
                 }
             }
+            // Reset conversation history to initial welcome message
+            conversationHistory = [
+                {
+                    role: 'assistant',
+                    content: 'Hello! I\'m your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?'
+                }
+            ];
             // Ensure typing indicator is hidden
             typingIndicator.style.display = 'none';
         }
