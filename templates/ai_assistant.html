@@ -1,325 +1,858 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Assistant - MavAdvisor</title>
-    <style>
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 120px);
-            max-height: 800px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            overflow: hidden;
-            background-color: #fff;
-        }
-        .chat-header {
-            background-color: #f0f0f0;
-            padding: 16px 24px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-        }
-        .chat-header h2 {
-            margin: 0;
-            color: #333;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-        }
-        .chat-header-icon {
-            margin-right: 12px;
-            font-size: 24px;
-        }
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .message {
-            max-width: 80%;
-            padding: 12px 16px;
-            border-radius: 18px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        .user-message {
-            align-self: flex-end;
-            background-color: #007bff;
-            color: white;
-            border-bottom-right-radius: 4px;
-        }
-        .assistant-message {
-            align-self: flex-start;
-            background-color: #f1f1f1;
-            color: #333;
-            border-bottom-left-radius: 4px;
-        }
-        .message-sender {
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 4px;
-            opacity: 0.8;
-        }
-        .chat-input-area {
-            border-top: 1px solid #ddd;
-            padding: 20px;
-            background-color: #f9f9f9;
-            display: flex;
-            gap: 12px;
-        }
-        .chat-input {
-            flex: 1;
-            padding: 14px 18px;
-            border: 1px solid #ccc;
-            border-radius: 24px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        .chat-input:focus {
-            border-color: #007bff;
-        }
-        .send-button {
-            padding: 14px 28px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 24px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .send-button:hover {
-            background-color: #0056cc;
-        }
-        .disclaimer {
-            margin-top: 20px;
-            padding: 16px;
-            background-color: #fff3cd;
-            border: 1px solid #ffecb5;
-            border-radius: 8px;
-            color: #856404;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        .disclaimer strong {
-            display: block;
-            margin-bottom: 4px;
-        }
-        .typing-indicator {
-            display: inline-block;
-            padding: 12px 16px;
-            background-color: #f1f1f1;
-            border-radius: 18px;
-            border-bottom-left-radius: 4px;
-            color: #666;
-            font-style: italic;
-        }
-        .dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #999;
-            margin: 0 2px;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        .dot:nth-child(1) { animation-delay: -0.32s; }
-        .dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Assistant — MAV Advisor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    :root {
+      --text: #f8fafc;
+      --line: rgba(255, 255, 255, 0.1);
+      --blue: #2563eb;
+      --blue-hover: #1d4ed8;
+      --card-bg: #1a1a1a;
+      --card-border: #2a2a2a;
+      --grad-start: #3b82f6;
+      --grad-end: #6366f1;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: #0a0a0f;
+      background-image:
+        linear-gradient(180deg, rgba(5, 10, 18, 0.42) 0%, rgba(6, 10, 18, 0.55) 100%),
+        radial-gradient(ellipse 90% 60% at 70% 20%, rgba(249, 115, 22, 0.06), transparent 55%),
+        radial-gradient(ellipse 70% 50% at 15% 45%, rgba(59, 130, 246, 0.08), transparent 50%),
+        url("bg.jpeg");
+      background-repeat: no-repeat;
+      background-position: center center;
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    .app {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar — matches Course Planner shell */
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(18, 18, 24, 0.85) 0%, rgba(10, 10, 16, 0.92) 100%);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .sidebar-top {
+      padding: 28px 20px 20px;
+      overflow-y: auto;
+    }
+
+    .profile {
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 8px;
+    }
+
+    .profile-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .avatar svg { width: 26px; height: 26px; stroke: #e2e8f0; stroke-width: 2; fill: none; }
+
+    .profile-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .profile-line { font-size: 13px; color: #cbd5e1; line-height: 1.4; }
+    .profile-major { font-size: 13px; color: #cbd5e1; margin-top: 4px; }
+
+    .contact {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 12px;
+    }
+
+    .contact-row { display: flex; align-items: center; gap: 8px; }
+    .contact-row a.email { color: #93c5fd; text-decoration: none; }
+    .contact-row a.email:hover { text-decoration: underline; }
+
+    .icon-16 {
+      width: 16px; height: 16px;
+      stroke: currentColor; stroke-width: 2; fill: none;
+      flex-shrink: 0; opacity: 0.75;
+    }
+
+    .section-title {
+      color: rgba(148, 163, 184, 0.9);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 20px 0 10px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 14px;
+      font-weight: 600;
+      padding: 12px 14px;
+      border-radius: 14px;
+      margin-bottom: 4px;
+      transition: background 0.2s, color 0.2s;
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .nav-item:hover {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+    }
+
+    /* Subtle pill for current page (reference: Clubs & Orgs) */
+    .nav-item.active-subtle {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-item.active-gradient {
+      color: #fff;
+      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      box-shadow: 0 4px 24px rgba(99, 102, 241, 0.35);
+    }
+
+    .nav-icon {
+      width: 18px; height: 18px;
+      stroke: currentColor; stroke-width: 2; fill: none;
+      flex-shrink: 0;
+    }
+
+    .sidebar-bottom { padding: 16px 20px 24px; }
+
+    .logout-btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      background: rgba(248, 250, 252, 0.95);
+      color: #1e293b;
+      padding: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .logout-btn:hover { box-shadow: 0 4px 20px rgba(255, 255, 255, 0.15); }
+
+    .btn-icon {
+      width: 16px; height: 16px;
+      stroke: currentColor; stroke-width: 2; fill: none;
+    }
+
+    /* Main */
+    .main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .page-head {
+      padding: 32px 40px 16px;
+    }
+
+    .page-head h1 {
+      font-size: 30px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+
+    .page-head p {
+      font-size: 15px;
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+
+    .search-wrap {
+      padding: 8px 40px 8px;
+      max-width: 560px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 14px;
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .search-input::placeholder { color: #94a3b8; }
+    .search-input:focus { border-color: rgba(96, 165, 250, 0.7); }
+
+    .section-block {
+      padding: 24px 40px 32px;
+    }
+
+    .section-block h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .empty-state {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px dashed rgba(255, 255, 255, 0.28);
+      border-radius: 16px;
+      padding: 48px 32px;
+      text-align: center;
+    }
+
+    .empty-state .empty-icon {
+      width: 48px;
+      height: 48px;
+      stroke: #94a3b8;
+      margin: 0 auto 16px;
+    }
+
+    .empty-state p { color: #e2e8f0; margin-bottom: 8px; font-size: 15px; }
+    .empty-state .sub { font-size: 14px; color: #94a3b8; }
+
+    .club-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .club-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 20px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .club-card:hover {
+      border-color: rgba(59, 130, 246, 0.45);
+    }
+
+    .club-card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .club-icon-wrap {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(37, 99, 235, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .club-icon-wrap svg {
+      width: 20px;
+      height: 20px;
+      stroke: #60a5fa;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .club-card h3 {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: #fff;
+    }
+
+    .club-desc {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #9ca3af;
+      margin-bottom: 16px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .club-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 16px;
+    }
+
+    .club-meta svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+    .club-actions {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .btn-join {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background: var(--blue);
+      color: #fff;
+      transition: background 0.2s, opacity 0.2s;
+    }
+
+    .btn-join:hover:not(:disabled) { background: var(--blue-hover); }
+    .btn-join:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .btn-join svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+    .btn-outline {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-outline:hover { background: #2a2a2a; }
+
+    .btn-icon-only {
+      width: 42px;
+      min-width: 42px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      background: transparent;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-icon-only:hover { background: #2a2a2a; }
+    .btn-icon-only svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1100px) {
+      .club-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 768px) {
+      .app { flex-direction: column; }
+      .sidebar { width: 100%; }
+      .page-head, .search-wrap, .section-block { padding-left: 20px; padding-right: 20px; }
+      .club-grid { grid-template-columns: 1fr; }
+    }
+  
+    /* Chat-specific styles */
+    .chat-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 240px);
+      min-height: 500px;
+      max-height: 700px;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+    }
+
+    .chat-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-header-icon {
+      font-size: 22px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      line-height: 1.5;
+      word-wrap: break-word;
+      font-size: 14px;
+    }
+
+    .user-message {
+      align-self: flex-end;
+      background: linear-gradient(90deg, var(--grad-start), var(--grad-end));
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .assistant-message {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text);
+      border-bottom-left-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .message-sender {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      opacity: 0.8;
+    }
+
+    .chat-input-area {
+      border-top: 1px solid var(--line);
+      padding: 20px 24px;
+      background: rgba(255, 255, 255, 0.03);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 14px 18px;
+      font-size: 14px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      outline: none;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .chat-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .chat-input:focus {
+      border-color: rgba(96, 165, 250, 0.7);
+    }
+
+    .send-button {
+      padding: 14px 28px;
+      background: var(--blue);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+
+    .send-button:hover {
+      background: var(--blue-hover);
+    }
+
+    .typing-indicator {
+      display: inline-block;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 18px;
+      border-bottom-left-radius: 4px;
+      color: #94a3b8;
+      font-style: italic;
+      font-size: 14px;
+    }
+
+    .dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #94a3b8;
+      margin: 0 2px;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .dot:nth-child(1) { animation-delay: -0.32s; }
+    .dot:nth-child(2) { animation-delay: -0.16s; }
+
+    .disclaimer {
+      margin-top: 24px;
+      padding: 16px 20px;
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.3);
+      border-radius: 12px;
+      color: #ffd54f;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .disclaimer strong {
+      display: block;
+      margin-bottom: 4px;
+      color: #ffca28;
+    }
+
+    @media (max-width: 768px) {
+      .chat-container {
+        height: calc(100vh - 300px);
+      }
+      .chat-header, .chat-input-area {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+      .chat-messages {
+        padding: 16px;
+      }
+    }
+</style>
 </head>
 <body>
-<div style="display: flex;">
-    <!-- Sidebar -->
-    {% include 'sidebar.html' %}
-    
-    <!-- Main Content -->
-    <div style="flex: 1; padding: 20px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h1>AI Assistant</h1>
-            <button style="padding: 12px 24px; background-color: #6c757d; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
-                Clear Chat
-            </button>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="profile">
+          <div class="profile-head">
+            <div class="avatar" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="M20 21a8 8 0 0 0-16 0"></path><circle cx="12" cy="8" r="4"></circle></svg>
+            </div>
+            <div>
+              <div class="profile-name">Sarah Martinez</div>
+              <div class="profile-line">Junior</div>
+              <div class="profile-major">Computer Science</div>
+            </div>
+          </div>
+          <div class="contact">
+            <a class="contact-row email" href="mailto:sarah.martinez@mavs.uta.edu">sarah.martinez@mavs.uta.edu</a>
+            <div class="contact-row">
+              <svg class="icon-16" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+              Expected: Spring 2027
+            </div>
+          </div>
         </div>
-        
-        <p style="color: #666; margin-bottom: 24px;">
-            Ask me anything about your degree plan, course selection, prerequisites, or university resources.
-        </p>
-        
-        <!-- Chat Interface -->
+
+        <nav aria-label="Main">
+          <div class="section-title">Main</div>
+          <a href="/user/dashboard" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            Dashboard
+          </a>
+          <a href="/user/course-planner" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+            Course Planner
+          </a>
+          <a href="/user/ai-assistant" class="nav-item active-subtle" aria-current="page">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path></svg>
+            AI Assistant
+          </a>
+        </nav>
+
+        <nav aria-label="Campus">
+          <div class="section-title">Campus</div>
+          <a href="/user/clubs" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            Clubs &amp; Orgs
+          </a>
+          <a href="/user/event-calendar" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg>
+            Event Calendar
+          </a>
+          <a href="/user/certificates" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
+            Certifications
+          </a>
+        </nav>
+
+        <nav aria-label="Account">
+          <div class="section-title">Account</div>
+          <a href="/user/account-management" class="nav-item">
+            <svg class="nav-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+            Account Settings
+          </a>
+        </nav>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button type="button" class="logout-btn">
+          <svg class="btn-icon" viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <path d="M16 17l5-5-5-5"></path>
+            <path d="M21 12H9"></path>
+          </svg>
+          Log Out
+        </button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="page-head">
+        <h1>AI Assistant</h1>
+        <p>Ask me anything about your degree plan, course selection, prerequisites, or university resources.</p>
+      </header>
+
+      <div class="section-block">
         <div class="chat-container">
-            <div class="chat-header">
-                <h2><span class="chat-header-icon">🤖</span> MavAdvisor AI Assistant</h2>
+          <div class="chat-header">
+            <h2><span class="chat-header-icon">🤖</span> MavAdvisor AI Assistant</h2>
+          </div>
+          
+          <div class="chat-messages" id="chatMessages">
+            <div class="message assistant-message">
+              <div class="message-sender">AI Assistant</div>
+              Hello! I'm your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?
             </div>
-            
-            <div class="chat-messages" id="chatMessages">
-                <div class="message assistant-message">
-                    <div class="message-sender">AI Assistant</div>
-                    Hello! I'm your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?
-                </div>
 
-                <!-- Typing indicator (hidden by default) -->
-                <div id="typingIndicator" class="typing-indicator" style="display: none;">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
+            <!-- Typing indicator (hidden by default) -->
+            <div id="typingIndicator" class="typing-indicator" style="display: none;">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
             </div>
-            
-            <div class="chat-input-area">
-                <input type="text" class="chat-input" id="chatInput" placeholder="Type your question here..." />
-                <button class="send-button" id="sendButton">Send</button>
-            </div>
+          </div>
+          
+          <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your question here..." />
+            <button class="send-button" id="sendButton">Send</button>
+            <button class="btn-outline" id="clearButton">Clear Chat</button>
+          </div>
         </div>
         
-        <!-- Disclaimer -->
         <div class="disclaimer">
-            <strong>⚠️ Disclaimer:</strong>
-            All content generated by this AI assistant is for informational purposes only. Please verify all academic information with official university sources, advisors, and course catalogs. The AI may occasionally produce inaccurate or outdated information.
+          <strong>⚠️ Disclaimer:</strong>
+          All content generated by this AI assistant is for informational purposes only. Please verify all academic information with official university sources, advisors, and course catalogs. The AI may occasionally produce inaccurate or outdated information.
         </div>
+      </div>
+    </main>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatInput = document.getElementById('chatInput');
+        const sendButton = document.getElementById('sendButton');
+        const chatMessages = document.getElementById('chatMessages');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const clearChatButton = document.getElementById('clearButton');
         
-        <!-- Back to Dashboard Link -->
-        <div style="margin-top: 30px;">
-            <a href="/user/dashboard" style="color: #2196F3; text-decoration: none; font-weight: bold;">← Back to Dashboard</a>
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const chatInput = document.getElementById('chatInput');
-    const sendButton = document.getElementById('sendButton');
-    const chatMessages = document.getElementById('chatMessages');
-    const typingIndicator = document.getElementById('typingIndicator');
-    const clearChatButton = document.querySelector('button[style*="background-color: #6c757d"]');
-    
-    // Conversation history array matching OpenAI format
-    let conversationHistory = [
-        {
-            role: 'assistant',
-            content: 'Hello! I\'m your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?'
+        // Conversation history array matching OpenAI format
+        let conversationHistory = [
+            {
+                role: 'assistant',
+                content: 'Hello! I\'m your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?'
+            }
+        ];
+        
+        function addMessage(text, isUser) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = isUser ? 'message user-message' : 'message assistant-message';
+            
+            const senderDiv = document.createElement('div');
+            senderDiv.className = 'message-sender';
+            senderDiv.textContent = isUser ? 'You' : 'AI Assistant';
+            
+            const textDiv = document.createElement('div');
+            textDiv.textContent = text;
+            
+            messageDiv.appendChild(senderDiv);
+            messageDiv.appendChild(textDiv);
+            chatMessages.removeChild(typingIndicator);
+            chatMessages.appendChild(messageDiv);
+            chatMessages.appendChild(typingIndicator);
+            
+            // Add to conversation history
+            conversationHistory.push({
+                role: isUser ? 'user' : 'assistant',
+                content: text
+            });
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
-    ];
-    
-    function addMessage(text, isUser) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = isUser ? 'message user-message' : 'message assistant-message';
         
-        const senderDiv = document.createElement('div');
-        senderDiv.className = 'message-sender';
-        senderDiv.textContent = isUser ? 'You' : 'AI Assistant';
+        function simulateAIResponse(userText) {
+            // Show typing indicator
+            typingIndicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Send request to chatbot endpoint with full conversation history
+            fetch('/chatbot/request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                  messages: conversationHistory,
+                  token: '845986498nvjaks853tngva'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                typingIndicator.style.display = 'none';
+                
+                if (data.error) {
+                    addMessage('Error: ' + data.error, false);
+                } else {
+                    addMessage(data.response, false);
+                }
+            })
+            .catch(error => {
+                typingIndicator.style.display = 'none';
+                // Fallback to mock response if API fails
+                let response = "I understand you're asking about \"" + userText + "\". As an AI assistant, I can help with degree planning, course prerequisites, and academic resources. For specific questions, please consult your academic advisor or the official university catalog.";
+                
+                // Example keyword matching (same as before)
+                if (userText.toLowerCase().includes('prerequisite') || userText.toLowerCase().includes('requirement')) {
+                    response = "Prerequisites vary by course. Check the course description in the university catalog or consult your academic advisor for the most accurate and up‑to‑date information.";
+                } else if (userText.toLowerCase().includes('schedule') || userText.toLowerCase().includes('course load')) {
+                    response = "A balanced schedule typically includes 12‑15 credit hours with a mix of core, elective, and general education courses. Consider difficulty, time commitments, and prerequisites when planning.";
+                } else if (userText.toLowerCase().includes('graduation') || userText.toLowerCase().includes('degree progress')) {
+                    response = "Your degree progress is shown on the Dashboard. Ensure you meet all major, minor, and university requirements. Review your degree audit regularly with your advisor.";
+                } else if (userText.toLowerCase().includes('club') || userText.toLowerCase().includes('organization')) {
+                    response = "UTA offers many student organizations related to computing, engineering, and other interests. Visit the Student Organizations website or the University Center for more information.";
+                }
+                
+                addMessage(response, false);
+            });
+        }
         
-        const textDiv = document.createElement('div');
-        textDiv.textContent = text;
-        
-        messageDiv.appendChild(senderDiv);
-        messageDiv.appendChild(textDiv);
-        chatMessages.appendChild(messageDiv);
-        
-        // Add to conversation history
-        conversationHistory.push({
-            role: isUser ? 'user' : 'assistant',
-            content: text
+        // Send message on button click
+        sendButton.addEventListener('click', function() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            
+            addMessage(text, true);
+            chatInput.value = '';
+            
+            simulateAIResponse(text);
         });
         
-        // Scroll to bottom
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-    
-    function simulateAIResponse(userText) {
-        // Show typing indicator
-        typingIndicator.style.display = 'block';
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        
-        // Send request to chatbot endpoint with full conversation history
-        fetch('/chatbot/request', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ messages: conversationHistory })
-        })
-        .then(response => response.json())
-        .then(data => {
-            typingIndicator.style.display = 'none';
-            
-            if (data.error) {
-                addMessage('Error: ' + data.error, false);
-            } else {
-                addMessage(data.response, false);
+        // Send message on Enter key
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendButton.click();
             }
-        })
-        .catch(error => {
-            typingIndicator.style.display = 'none';
-            // Fallback to mock response if API fails
-            let response = "I understand you're asking about \"" + userText + "\". As an AI assistant, I can help with degree planning, course prerequisites, and academic resources. For specific questions, please consult your academic advisor or the official university catalog.";
-            
-            // Example keyword matching (same as before)
-            if (userText.toLowerCase().includes('prerequisite') || userText.toLowerCase().includes('requirement')) {
-                response = "Prerequisites vary by course. Check the course description in the university catalog or consult your academic advisor for the most accurate and up‑to‑date information.";
-            } else if (userText.toLowerCase().includes('schedule') || userText.toLowerCase().includes('course load')) {
-                response = "A balanced schedule typically includes 12‑15 credit hours with a mix of core, elective, and general education courses. Consider difficulty, time commitments, and prerequisites when planning.";
-            } else if (userText.toLowerCase().includes('graduation') || userText.toLowerCase().includes('degree progress')) {
-                response = "Your degree progress is shown on the Dashboard. Ensure you meet all major, minor, and university requirements. Review your degree audit regularly with your advisor.";
-            } else if (userText.toLowerCase().includes('club') || userText.toLowerCase().includes('organization')) {
-                response = "UTA offers many student organizations related to computing, engineering, and other interests. Visit the Student Organizations website or the University Center for more information.";
-            }
-            
-            addMessage(response, false);
         });
-    }
-    
-    // Send message on button click
-    sendButton.addEventListener('click', function() {
-        const text = chatInput.value.trim();
-        if (!text) return;
         
-        addMessage(text, true);
-        chatInput.value = '';
-        
-        simulateAIResponse(text);
-    });
-    
-    // Send message on Enter key
-    chatInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            sendButton.click();
-        }
-    });
-    
-    // Clear chat button
-    clearChatButton.addEventListener('click', function() {
-        if (confirm('Clear the entire chat history? This cannot be undone.')) {
-            // Keep only the first welcome message
-            const messages = chatMessages.querySelectorAll('.message');
-            for (let i = 0; i < messages.length; i++) {
-                if (i > 0) { // keep index 0 (first welcome message)
-                    messages[i].remove();
+        // Clear chat button
+        clearChatButton.addEventListener('click', function() {
+            if (confirm('Clear the entire chat history? This cannot be undone.')) {
+                // Keep only the first welcome message
+                const messages = chatMessages.querySelectorAll('.message');
+                for (let i = 0; i < messages.length; i++) {
+                    if (i > 0) { // keep index 0 (first welcome message)
+                        messages[i].remove();
+                    }
                 }
+                // Reset conversation history to initial welcome message
+                conversationHistory = [
+                    {
+                        role: 'assistant',
+                        content: 'Hello! I\'m your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?'
+                    }
+                ];
+                // Ensure typing indicator is hidden
+                typingIndicator.style.display = 'none';
             }
-            // Reset conversation history to initial welcome message
-            conversationHistory = [
-                {
-                    role: 'assistant',
-                    content: 'Hello! I\'m your MavAdvisor AI Assistant. I can help you with questions about your degree progress, course planning, prerequisites, and university resources. How can I assist you today?'
-                }
-            ];
-            // Ensure typing indicator is hidden
-            typingIndicator.style.display = 'none';
-        }
+        });
     });
-});
-</script>
+  </script>
 </body>
 </html>
