@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Certifications - MavAdvisor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-glass: rgba(15, 20, 30, 0.72);
+      --bg-card: rgba(20, 28, 42, 0.78);
+      --bg-sidebar: rgba(12, 16, 26, 0.88);
+      --accent-blue: #5b8dee;
+      --accent-orange: #e07b39;
+      --accent-green: #3ecf8e;
+      --text-primary: #e8eaf0;
+      --text-secondary: #8a95a8;
+      --text-muted: #5a6478;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html {
+      height: 100%;
+      min-height: 100vh;
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      min-height: 100vh;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      color: var(--text-primary);
+      position: relative;
+      overflow: hidden;
+      background: #0a0f18;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      background-image: url("{{ url_for('static', filename='images/background.png') }}");
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 12, 22, 0.55);
+      z-index: 1;
+    }
+
+    .layout {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      width: 100%;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      padding: 32px 36px 24px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,15,25,0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-text .page-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 8px;
+    }
+
+    .intro {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      max-width: 52rem;
+    }
+
+    .btn-my-certs {
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #4a7de8, #7b5ce8);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      transition: opacity 0.2s;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-my-certs:hover { opacity: 0.92; }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      padding: 28px 36px 36px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .content,
+    .certs-scroll {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(91,141,238,0.55) rgba(255,255,255,0.05);
+    }
+
+    .content::-webkit-scrollbar,
+    .certs-scroll::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .content::-webkit-scrollbar-track,
+    .certs-scroll::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+    }
+
+    .content::-webkit-scrollbar-thumb,
+    .certs-scroll::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(91,141,238,0.8), rgba(123,92,232,0.75));
+      border-radius: 10px;
+      border: 2px solid rgba(10,14,24,0.7);
+    }
+
+    .content::-webkit-scrollbar-thumb:hover,
+    .certs-scroll::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, rgba(108,155,243,0.9), rgba(140,109,242,0.85));
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 14px 20px;
+      margin-bottom: 18px;
+    }
+
+    .interests-hint {
+      flex: 1;
+      min-width: 200px;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      padding-top: 4px;
+    }
+
+    .interests-hint strong {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .search-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .search-bar input {
+      flex: 1;
+      min-width: 220px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 14px;
+      color: var(--text-primary);
+      font-family: 'Sora', sans-serif;
+      outline: none;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.06);
+    }
+
+    .search-bar input::placeholder { color: var(--text-muted); }
+
+    .btn-search {
+      background: linear-gradient(135deg, #2eb885, var(--accent-green));
+      color: #07161a;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 22px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-clear {
+      background: rgba(255,255,255,0.06);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.06);
+    }
+
+    .btn-clear:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text-primary);
+    }
+
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .section-head p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .cert-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .cert-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      padding: 22px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      cursor: pointer;
+    }
+
+    .cert-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(91,141,238,0.3);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.24);
+    }
+
+    .cert-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .cert-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(91,141,238,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--accent-blue);
+      font-size: 18px;
+    }
+
+    .cert-name {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--text-primary);
+    }
+
+    .cert-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 14px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    .badge-suggested {
+      background: rgba(224, 123, 57, 0.18);
+      border: 1px solid rgba(224, 123, 57, 0.32);
+      color: #f5b27f;
+    }
+
+    .badge-score {
+      background: rgba(91,141,238,0.14);
+      border: 1px solid rgba(91,141,238,0.28);
+      color: #9cb4ff;
+    }
+
+    .badge-degree {
+      background: rgba(62, 207, 142, 0.14);
+      border: 1px solid rgba(62, 207, 142, 0.28);
+      color: #85e3b9;
+    }
+
+    .cert-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 14px;
+      min-height: 66px;
+    }
+
+    .cert-courses {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .course-pill {
+      font-size: 12px;
+      color: #b8c6e8;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 6px 9px;
+      border-radius: 999px;
+    }
+
+    .cert-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .cert-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .btn-details {
+      background: linear-gradient(135deg, #2eb885, var(--accent-green));
+      color: #07161a;
+      border: none;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-details:hover { filter: brightness(1.06); }
+
+    .btn-add-remove {
+      border: 1px solid rgba(91,141,238,0.45);
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(74,125,232,0.85), rgba(123,92,232,0.85));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-add-remove:hover { filter: brightness(1.08); }
+
+    .btn-add-remove.is-selected {
+      border-color: rgba(226,74,90,0.5);
+      background: linear-gradient(135deg, rgba(177,57,71,0.9), rgba(226,74,90,0.85));
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 38px 24px;
+      color: var(--text-muted);
+      font-size: 15px;
+      background: rgba(255,255,255,0.04);
+      border: 1px dashed rgba(255,255,255,0.12);
+      border-radius: 16px;
+    }
+
+    .hidden { display: none !important; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 10, 18, 0.65);
+      backdrop-filter: blur(8px);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal.open { display: flex; }
+
+    .modal-card {
+      width: min(720px, 100%);
+      max-height: 88vh;
+      overflow: auto;
+      background: rgba(16, 22, 34, 0.96);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+      padding: 22px;
+    }
+
+    .modal-card,
+    .modal-card * {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(91,141,238,0.55) rgba(255,255,255,0.05);
+    }
+
+    .modal-card::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .modal-card::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+    }
+
+    .modal-card::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(91,141,238,0.8), rgba(123,92,232,0.75));
+      border-radius: 10px;
+      border: 2px solid rgba(10,14,24,0.7);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      margin-bottom: 8px;
+    }
+
+    .modal-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .modal-close {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .modal-close:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    .modal-panel {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .modal-panel h4 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .modal-panel p,
+    .modal-panel li {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .modal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .modal-list li {
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.06);
+      color: var(--text-primary);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+    }
+
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #4a7de8, #7b5ce8);
+      color: #fff;
+      border: 1px solid rgba(91,141,238,0.4);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.12);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #5b8dee, #8c6df2);
+    }
+
+    @media (max-width: 1100px) {
+      .cert-grid { grid-template-columns: 1fr; }
+      .modal-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .layout { flex-direction: column; height: auto; }
+      .topbar { padding: 20px; }
+      .content { padding: 20px; }
+      .sidebar { width: 100%; min-height: auto; }
+      .btn-my-certs { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="layout">
+    {% include 'sidebar.html' %}
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-text">
+          <div class="page-title">Available Certifications</div>
+          <p class="intro">
+            Browse and search for certifications that can enhance your academic and professional profile.
+            Click on any certification to view details and enrollment options.
+          </p>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="toolbar">
+          <p class="interests-hint" id="interestsHint"></p>
+        </div>
+
+        <div class="search-bar">
+          <input type="search" id="searchInput" placeholder="Search certifications by name or description..." autocomplete="off" />
+          <button type="button" class="btn-search" id="btnSearch">Search</button>
+          <button type="button" class="btn-clear" id="btnClear">Clear</button>
+        </div>
+
+        <section class="section" id="myCertificationsSection">
+          <div class="section-head">
+            <div>
+              <h2>My Certifications</h2>
+              <p>Certificates you manually added. Remove them anytime.</p>
+            </div>
+          </div>
+          <div id="selectedCertificatesContainer" class="cert-grid certs-scroll"></div>
+          <p class="empty-state hidden" id="selectedEmpty">You have not added any certifications yet.</p>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>Suggested For You</h2>
+              <p>Based on your interests and current profile.</p>
+            </div>
+          </div>
+          <div id="suggestedCertificatesContainer" class="cert-grid certs-scroll"></div>
+          <p class="empty-state hidden" id="suggestedEmpty">No suggested certifications match your search.</p>
+        </section>
+
+        <section class="section">
+          <div class="section-head">
+            <div>
+              <h2>All Available Certifications</h2>
+              <p>Everything available from your major's certification catalog.</p>
+            </div>
+          </div>
+          <div id="certificatesContainer" class="cert-grid certs-scroll"></div>
+          <p class="empty-state hidden" id="allEmpty">No certifications match your search.</p>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div id="certModal" class="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modalTitle">Certification Details</div>
+          <div class="modal-subtitle" id="modalSubtitle"></div>
+        </div>
+        <button type="button" class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+      </div>
+
+      <div class="modal-grid">
+        <div class="modal-panel">
+          <h4>Overview</h4>
+          <p id="modalDescription"></p>
+        </div>
+        <div class="modal-panel">
+          <h4>Quick Facts</h4>
+          <ul class="modal-list">
+            <li id="modalScore"></li>
+            <li id="modalDegree"></li>
+            <li id="modalKeywords"></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="modal-panel" style="margin-top: 16px;">
+        <h4>Related Courses to Take</h4>
+        <ul class="modal-list" id="modalCourses"></ul>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="modalDismiss">Close</button>
+        <button type="button" class="btn-primary" id="modalPrimary">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('runtime_config_js') }}"></script>
+  <script>
+    let allCertificates = [];
+    let suggestedCertificates = [];
+    let selectedCertificates = [];
+    let userInterests = [];
+    let currentUser = '';
+    let currentSearch = '';
+
+    function getCurrentUsername() {
+      const username = sessionStorage.getItem('username');
+      if (!username) {
+        window.location.href = '/user/login';
+        return '';
+      }
+      return username;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    function normalizeText(value) {
+      return String(value || '').toLowerCase();
+    }
+
+    function updateInterestsHint() {
+      const labels = userInterests.length ? userInterests.join(', ') : 'No saved interests yet';
+      document.getElementById('interestsHint').innerHTML =
+        'Suggested certifications are based on your saved interests: <strong>' + escapeHtml(labels) + '</strong>.';
+    }
+
+    function matchesSearch(cert, term) {
+      if (!term) return true;
+      const haystack = [cert.name, cert.description, (cert.keywords || []).join(' '), (cert.courses || []).join(' ')].join(' ');
+      return normalizeText(haystack).includes(term);
+    }
+
+    function isCertificateSelected(certKey) {
+      return selectedCertificates.some((cert) => cert.key === certKey);
+    }
+
+    async function addCertificate(certKey) {
+      const response = await fetch(`${API_BASE_URL}/api/certificates/select`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUser, certificate_id: certKey })
+      });
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Could not add certificate');
+      }
+      return data;
+    }
+
+    async function removeCertificate(certKey) {
+      const response = await fetch(`${API_BASE_URL}/api/certificates/select`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUser, certificate_id: certKey })
+      });
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Could not remove certificate');
+      }
+      return data;
+    }
+
+    function createCertificateElement(cert, isSuggested = false) {
+      const certElement = document.createElement('article');
+      certElement.className = 'cert-card';
+      certElement.setAttribute('data-cert-key', cert.key);
+
+      const selected = isCertificateSelected(cert.key);
+      const addRemoveLabel = selected ? 'Remove' : 'Add';
+      const addRemoveClass = selected ? 'btn-add-remove is-selected' : 'btn-add-remove';
+
+      const badgeHTML = isSuggested
+        ? `<span class="badge badge-suggested">Suggested</span><span class="badge badge-score">Score ${cert.score || 0}</span>`
+        : '';
+
+      const degreeHTML = cert.degree
+        ? `<span class="badge badge-degree">${escapeHtml(cert.degree)}</span>`
+        : '';
+
+      const coursesHTML = Array.isArray(cert.courses) && cert.courses.length > 0
+        ? cert.courses.map((course) => `<span class="course-pill">${escapeHtml(course)}</span>`).join('')
+        : '<span class="course-pill">No related courses listed</span>';
+
+      certElement.innerHTML = `
+        <div class="cert-top">
+          <div class="cert-icon">🎓</div>
+          <div>
+            <div class="cert-name">${escapeHtml(cert.name)}</div>
+            <div class="cert-badges">${badgeHTML}${degreeHTML}</div>
+          </div>
+        </div>
+        <p class="cert-desc">${escapeHtml(cert.description)}</p>
+        <div class="cert-courses">${coursesHTML}</div>
+        <div class="cert-footer">
+          <span class="cert-hint">Click to view details and enrollment</span>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn-details" data-view-details="${escapeHtml(cert.key)}">View Details</button>
+            <button type="button" class="${addRemoveClass}" data-add-remove="${escapeHtml(cert.key)}">${addRemoveLabel}</button>
+          </div>
+        </div>
+      `;
+
+      certElement.addEventListener('click', function () {
+        openDetailsModal(cert.key);
+      });
+
+      certElement.querySelector('[data-view-details]').addEventListener('click', function (event) {
+        event.stopPropagation();
+        openDetailsModal(cert.key);
+      });
+
+      certElement.querySelector('[data-add-remove]').addEventListener('click', async function (event) {
+        event.stopPropagation();
+        const button = event.currentTarget;
+        button.disabled = true;
+        try {
+          if (isCertificateSelected(cert.key)) {
+            await removeCertificate(cert.key);
+          } else {
+            await addCertificate(cert.key);
+          }
+          await loadCertificationsFromAPI();
+        } catch (error) {
+          console.error('Error updating selected certificates:', error);
+        } finally {
+          button.disabled = false;
+        }
+      });
+
+      return certElement;
+    }
+
+    function renderSelectedCertifications() {
+      const container = document.getElementById('selectedCertificatesContainer');
+      const emptyState = document.getElementById('selectedEmpty');
+      container.innerHTML = '';
+
+      const filtered = selectedCertificates.filter((cert) => matchesSearch(cert, currentSearch));
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      filtered.forEach((cert) => container.appendChild(createCertificateElement(cert, false)));
+    }
+
+    function renderSuggestedCertifications() {
+      const container = document.getElementById('suggestedCertificatesContainer');
+      const emptyState = document.getElementById('suggestedEmpty');
+      container.innerHTML = '';
+
+      const filtered = suggestedCertificates.filter((cert) => matchesSearch(cert, currentSearch));
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      filtered.forEach((cert) => container.appendChild(createCertificateElement(cert, true)));
+    }
+
+    function renderCertifications() {
+      const container = document.getElementById('certificatesContainer');
+      const emptyState = document.getElementById('allEmpty');
+      container.innerHTML = '';
+
+      const filtered = allCertificates.filter((cert) => matchesSearch(cert, currentSearch));
+      if (filtered.length === 0) {
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      filtered.forEach((cert) => container.appendChild(createCertificateElement(cert, false)));
+    }
+
+    function renderAll() {
+      renderSelectedCertifications();
+      renderSuggestedCertifications();
+      renderCertifications();
+    }
+
+    function openDetailsModal(certKey) {
+      const cert = allCertificates.find((item) => item.key === certKey) || suggestedCertificates.find((item) => item.key === certKey);
+      if (!cert) {
+        return;
+      }
+
+      const isSuggested = suggestedCertificates.some((item) => item.key === certKey);
+      document.getElementById('modalTitle').textContent = cert.name;
+      document.getElementById('modalSubtitle').textContent = isSuggested
+        ? 'Suggested for you based on your profile and interests.'
+        : 'Available certification from your major catalog.';
+      document.getElementById('modalDescription').textContent = cert.description || 'No description available.';
+      document.getElementById('modalScore').textContent = 'Score: ' + String(cert.score || 0);
+      document.getElementById('modalDegree').textContent = 'Degree: ' + (cert.degree || 'Not specified');
+      document.getElementById('modalKeywords').textContent = 'Keywords: ' + ((cert.keywords && cert.keywords.length) ? cert.keywords.join(', ') : 'None listed');
+
+      const courseList = document.getElementById('modalCourses');
+      courseList.innerHTML = '';
+      if (Array.isArray(cert.courses) && cert.courses.length > 0) {
+        cert.courses.forEach((course) => {
+          const li = document.createElement('li');
+          li.textContent = course;
+          courseList.appendChild(li);
+        });
+      } else {
+        const li = document.createElement('li');
+        li.textContent = 'No related courses listed.';
+        courseList.appendChild(li);
+      }
+
+      const modalPrimary = document.getElementById('modalPrimary');
+      const currentlySelected = isCertificateSelected(cert.key);
+      modalPrimary.textContent = currentlySelected ? 'Remove' : 'Add';
+      modalPrimary.onclick = function () {
+        (async function () {
+          try {
+            if (isCertificateSelected(cert.key)) {
+              await removeCertificate(cert.key);
+            } else {
+              await addCertificate(cert.key);
+            }
+            closeModal();
+            await loadCertificationsFromAPI();
+          } catch (error) {
+            console.error('Error updating selected certificates:', error);
+          }
+        })();
+      };
+
+      document.getElementById('certModal').classList.add('open');
+      document.getElementById('certModal').setAttribute('aria-hidden', 'false');
+    }
+
+    function closeModal() {
+      document.getElementById('certModal').classList.remove('open');
+      document.getElementById('certModal').setAttribute('aria-hidden', 'true');
+    }
+
+    async function loadCertificationsFromAPI() {
+      currentUser = getCurrentUsername();
+      if (!currentUser) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/certificates/${encodeURIComponent(currentUser)}`);
+        const data = await response.json();
+
+        if (!data.success) {
+          document.getElementById('interestsHint').textContent = data.message || 'Error loading certifications.';
+          return;
+        }
+
+        suggestedCertificates = data.data.suggested_certificates || [];
+        allCertificates = data.data.available_certificates || [];
+        selectedCertificates = data.data.selected_certificates || [];
+        userInterests = data.data.user_interests || [];
+
+        updateInterestsHint();
+        renderAll();
+      } catch (error) {
+        console.error('Error loading certifications:', error);
+        document.getElementById('interestsHint').textContent = 'Error loading certifications.';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      document.getElementById('btnSearch').addEventListener('click', function () {
+        currentSearch = document.getElementById('searchInput').value.trim().toLowerCase();
+        renderAll();
+      });
+
+      document.getElementById('btnClear').addEventListener('click', function () {
+        document.getElementById('searchInput').value = '';
+        currentSearch = '';
+        renderAll();
+      });
+
+      document.getElementById('searchInput').addEventListener('keyup', function (event) {
+        if (event.key === 'Enter') {
+          currentSearch = event.target.value.trim().toLowerCase();
+          renderAll();
+        }
+      });
+
+      document.getElementById('modalClose').addEventListener('click', closeModal);
+      document.getElementById('modalDismiss').addEventListener('click', closeModal);
+      document.getElementById('certModal').addEventListener('click', function (event) {
+        if (event.target === this) {
+          closeModal();
+        }
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          closeModal();
+        }
+      });
+
+      loadCertificationsFromAPI();
+    });
+  </script>
+</body>
+</html>

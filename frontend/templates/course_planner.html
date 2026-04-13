@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Course Planner - MavAdvisor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-card: rgba(20, 28, 42, 0.78);
+      --bg-sidebar: rgba(12, 16, 26, 0.88);
+      --accent-blue: #5b8dee;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --text-primary: #e8eaf0;
+      --text-secondary: #8a95a8;
+      --text-muted: #5a6478;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html, body { height: 100%; }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow: hidden;
+      background: #0a0d15;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: url("{{ url_for('static', filename='images/background.png') }}") center/cover no-repeat;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      background: rgba(8, 12, 22, 0.58);
+    }
+
+    .layout {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      height: 100vh;
+      width: 100%;
+    }
+
+    .sidebar {
+      width: 268px;
+      min-height: 100%;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0 18px;
+      backdrop-filter: blur(18px);
+      flex-shrink: 0;
+      box-shadow: inset -1px 0 0 rgba(91,141,238,0.15), inset 0 0 40px rgba(91,141,238,0.08);
+    }
+
+    .user-section {
+      padding: 0 22px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .user-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a5bd9, #5b8dee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .user-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+
+    .user-level {
+      font-size: 13px;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 3px 0;
+    }
+
+    .user-level::before { content: '✦'; font-size: 10px; }
+    .user-dept { font-size: 13px; color: var(--text-muted); }
+
+    .user-email {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.35;
+    }
+
+    .user-email::before { content: '✉'; font-size: 12px; }
+
+    nav { padding: 22px 14px 0; flex: 1; }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 0 8px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(91,141,238,0.25), rgba(91,141,238,0.08));
+      color: var(--accent-blue);
+      border-left: 2px solid var(--accent-blue);
+    }
+
+    .nav-icon { font-size: 16px; width: 22px; text-align: center; }
+    .nav-group { margin-top: 22px; }
+
+    .logout {
+      margin: 14px 14px 12px;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Sora', sans-serif;
+      background: transparent;
+    }
+
+    .logout:hover { background: rgba(255,255,255,0.04); color: var(--text-primary); }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      padding: 30px 36px 22px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10, 15, 25, 0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+    .topbar p { font-size: 15px; color: var(--text-secondary); margin-top: 4px; }
+
+    .content {
+      padding: 28px 36px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .stage-container { display: none; }
+    .stage-container.active { display: block; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      padding: 24px;
+    }
+
+    .section-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+    .section-subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 20px; }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .course-row {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .course-info { flex: 1; }
+
+    .course-code {
+      display: inline-block;
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      color: #dbeafe;
+      background: rgba(91,141,238,0.25);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 5px 10px;
+      margin-bottom: 8px;
+    }
+
+    .course-name { color: #d6deeb; font-size: 14px; line-height: 1.45; }
+
+    .course-actions { display: flex; gap: 10px; }
+
+    .action-button {
+      flex: 1;
+      padding: 10px 12px;
+      border: 1px solid rgba(91,141,238,0.3);
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 13px;
+      color: #fff;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.12);
+      background: rgba(91,141,238,0.25);
+    }
+
+    .action-button:hover {
+      transform: translateY(-2px);
+      background: rgba(91,141,238,0.35);
+      border-color: rgba(91,141,238,0.5);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.18);
+    }
+
+    .btn-completed {
+      background: rgba(91,141,238,0.25);
+      border: 1px solid rgba(91,141,238,0.3);
+    }
+
+    .btn-drop {
+      background: rgba(224,123,57,0.25);
+      border: 1px solid rgba(224,123,57,0.3);
+    }
+
+    .btn-completed.selected {
+      background: rgba(91,141,238,0.45);
+      border-color: rgba(91,141,238,0.6);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), inset 0 0 12px rgba(91,141,238,0.2);
+    }
+
+    .btn-drop.selected {
+      background: rgba(224,123,57,0.45);
+      border-color: rgba(224,123,57,0.6);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), inset 0 0 12px rgba(224,123,57,0.2);
+    }
+
+    .continue-btn {
+      padding: 13px 20px;
+      background: linear-gradient(135deg, rgba(74,125,232,0.8), rgba(123,92,232,0.8));
+      color: white;
+      border: 1px solid rgba(91,141,238,0.4);
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .continue-btn:hover:not(:disabled) {
+      background: linear-gradient(135deg, rgba(74,125,232,0.95), rgba(123,92,232,0.95));
+      transform: translateY(-2px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.25);
+    }
+
+    .continue-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .message-box {
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .success-message {
+      background: rgba(34,197,94,0.18);
+      color: #86efac;
+      border: 1px solid rgba(34,197,94,0.35);
+    }
+
+    .form-group { margin-bottom: 18px; }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #dbeafe;
+    }
+
+    .form-group input {
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px;
+      font-size: 15px;
+      width: min(360px, 100%);
+      background: rgba(255,255,255,0.04);
+      color: #fff;
+    }
+
+    .three-sets {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .course-set {
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      padding: 14px;
+      background: rgba(255,255,255,0.04);
+    }
+
+    .course-set h3 {
+      margin-top: 0;
+      color: #dbeafe;
+      border-bottom: 1px solid rgba(255,255,255,0.12);
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .course-item {
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      margin-bottom: 10px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .course-item-code { font-weight: 700; color: #93c5fd; font-size: 13px; }
+    .course-item-name { color: #d6deeb; font-size: 13px; margin-top: 4px; }
+    .course-item-credits { color: #94a3b8; font-size: 12px; margin-top: 4px; }
+
+    #selected-set-container { margin-top: 20px; }
+
+    @media (max-width: 1200px) {
+      .three-sets { grid-template-columns: 1fr 1fr; }
+      .courses-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .layout { flex-direction: column; height: auto; }
+      .sidebar { width: 100%; min-height: auto; }
+      .topbar { padding: 20px; }
+      .content { padding: 20px; }
+      .three-sets { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="bg-overlay"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="user-section">
+      <div class="user-avatar" id="user-avatar">U</div>
+      <div class="user-name" id="user-name">Student</div>
+      <div class="user-level" id="user-level">Student</div>
+      <div class="user-dept" id="user-dept">Major</div>
+      <div class="user-email" id="user-email">student@mavs.uta.edu</div>
+    </div>
+
+    <nav>
+      <div class="nav-label">Main</div>
+      <a class="nav-item" href="/user/dashboard"><span class="nav-icon">▦</span> Dashboard</a>
+      <a class="nav-item active" href="/user/course-planner"><span class="nav-icon">📅</span> Course Planner</a>
+      <a class="nav-item" href="/user/ai-assistant"><span class="nav-icon">✦</span> AI Assistant</a>
+
+      <div class="nav-group">
+        <div class="nav-label">Campus</div>
+        <a class="nav-item" href="/user/clubs"><span class="nav-icon">⊞</span> Clubs &amp; Orgs</a>
+        <a class="nav-item" href="/user/event-calendar"><span class="nav-icon">🗓</span> Event Calendar</a>
+        <a class="nav-item" href="/user/certificates"><span class="nav-icon">🎓</span> Certifications</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">Account</div>
+        <a class="nav-item" href="/user/account-management"><span class="nav-icon">⚙</span> Account Settings</a>
+      </div>
+    </nav>
+
+    <button type="button" class="logout" id="btnLogout"><span>⎋</span> Log Out</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1>Course Planner</h1>
+      <p id="planner-subtitle">Plan your academic journey</p>
+    </header>
+
+    <div class="content">
+      <div id="stage-1" class="stage-container active card">
+        <h2 class="section-title">Courses In Progress</h2>
+        <p class="section-subtitle">Select an action for each course you are currently taking.</p>
+
+        <div id="courses-in-progress-container" class="courses-grid"></div>
+
+        <p id="no-selection-message" class="message-inline">Please select an action for every course.</p>
+        <button id="continue-btn-stage1" class="continue-btn" disabled>Start Planning</button>
+      </div>
+
+      <div id="stage-2" class="stage-container card">
+        <h2 class="section-title">Progress Update</h2>
+        <div class="message-box success-message">Courses updated successfully.</div>
+        <button id="continue-btn-stage2" class="continue-btn">Next</button>
+      </div>
+
+      <div id="stage-3" class="stage-container card">
+        <h2 class="section-title">Plan Next Semester</h2>
+        <p class="section-subtitle">How many credit hours do you plan to take next semester?</p>
+
+        <div class="form-group">
+          <label for="credit-hours-input">Credit Hours (1-18)</label>
+          <input type="number" id="credit-hours-input" placeholder="Enter credit hours" min="1" max="18">
+        </div>
+
+        <button id="continue-btn-stage3" class="continue-btn">Continue</button>
+      </div>
+
+      <div id="stage-4" class="stage-container card">
+        <h2 class="section-title">Recommended Course Sets</h2>
+        <p class="section-subtitle">Choose a set of courses for next semester. Each set targets your selected credit hours.</p>
+
+        <div class="three-sets" id="course-sets-container"></div>
+        <div id="selected-set-container"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="{{ url_for('runtime_config_js') }}"></script>
+<script>
+let courseSelections = {};
+let currentStage = 1;
+let coursesInProgress = [];
+let selectedCreditHours = 0;
+let courseSetPlans = [];
+let selectedSetIndex = null;
+let selectedSetCourses = [];
+
+function makeInitials(name) {
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return 'U';
+  if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+async function loadSidebarProfile() {
+  const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+  if (!username) return;
+
+  document.getElementById('planner-subtitle').textContent = 'Welcome back, ' + username + ' 👋';
+  document.getElementById('user-name').textContent = username;
+  document.getElementById('user-avatar').textContent = makeInitials(username);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
+    const result = await response.json();
+    if (!result.success || !result.data) return;
+
+    const data = result.data;
+    document.getElementById('user-level').textContent = data.classification || 'Student';
+    document.getElementById('user-dept').textContent = data.major || 'Major not set';
+    document.getElementById('user-email').textContent = data.email || 'No email on file';
+  } catch (error) {
+    console.error('Error loading sidebar profile:', error);
+  }
+}
+
+async function loadCoursesInProgress() {
+  const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+
+  if (!username) {
+    document.getElementById('courses-in-progress-container').innerHTML = '<p class="section-subtitle">Please log in first.</p>';
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/user/${encodeURIComponent(username)}`);
+    const result = await response.json();
+
+    if (result.success && result.data.courses_in_progress) {
+      coursesInProgress = result.data.courses_in_progress;
+      renderCoursesInProgress();
+    } else {
+      document.getElementById('courses-in-progress-container').innerHTML = '<p class="section-subtitle">No courses in progress.</p>';
+      document.getElementById('continue-btn-stage1').disabled = false;
+    }
+  } catch (error) {
+    console.error('Error loading courses:', error);
+    document.getElementById('courses-in-progress-container').innerHTML = '<p class="section-subtitle">Error loading courses.</p>';
+  }
+}
+
+function renderCoursesInProgress() {
+  const container = document.getElementById('courses-in-progress-container');
+  container.innerHTML = '';
+
+  if (coursesInProgress.length === 0) {
+    container.innerHTML = '<p class="section-subtitle">No courses in progress.</p>';
+    document.getElementById('continue-btn-stage1').disabled = false;
+    document.getElementById('no-selection-message').style.display = 'none';
+    return;
+  }
+
+  coursesInProgress.forEach(course => {
+    const courseRow = document.createElement('div');
+    courseRow.className = 'course-row';
+    courseRow.dataset.courseCode = course.code;
+
+    const courseInfo = document.createElement('div');
+    courseInfo.className = 'course-info';
+    courseInfo.innerHTML = `
+      <div class="course-code">${course.code}</div>
+      <div class="course-name">${course.name || 'Unknown Course'}</div>
+    `;
+
+    const actions = document.createElement('div');
+    actions.className = 'course-actions';
+
+    const completedBtn = document.createElement('button');
+    completedBtn.className = 'action-button btn-completed';
+    completedBtn.textContent = 'Mark Completed';
+    completedBtn.addEventListener('click', () => selectAction(course.code, 'completed', completedBtn));
+
+    const dropBtn = document.createElement('button');
+    dropBtn.className = 'action-button btn-drop';
+    dropBtn.textContent = 'Drop';
+    dropBtn.addEventListener('click', () => selectAction(course.code, 'drop', dropBtn));
+
+    actions.appendChild(completedBtn);
+    actions.appendChild(dropBtn);
+
+    courseRow.appendChild(courseInfo);
+    courseRow.appendChild(actions);
+    container.appendChild(courseRow);
+  });
+}
+
+function selectAction(courseCode, action, button) {
+  const row = button.closest('.course-row');
+  const buttons = row.querySelectorAll('.action-button');
+  buttons.forEach(btn => btn.classList.remove('selected'));
+
+  button.classList.add('selected');
+  courseSelections[courseCode] = action;
+
+  updateContinueButton();
+}
+
+function updateContinueButton() {
+  const continueBtn = document.getElementById('continue-btn-stage1');
+  const allSelected = coursesInProgress.length === 0 || coursesInProgress.every(c => courseSelections[c.code]);
+  const noSelectionMsg = document.getElementById('no-selection-message');
+
+  if (allSelected) {
+    continueBtn.disabled = false;
+    noSelectionMsg.style.display = 'none';
+  } else if (coursesInProgress.length > 0) {
+    continueBtn.disabled = true;
+    noSelectionMsg.style.display = 'block';
+  }
+}
+
+function goToStage(stage) {
+  document.querySelectorAll('.stage-container').forEach(el => el.classList.remove('active'));
+  document.getElementById(`stage-${stage}`).classList.add('active');
+  currentStage = stage;
+}
+
+document.getElementById('continue-btn-stage1').addEventListener('click', async () => {
+  const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/update_course_progress`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: username,
+        updated_courses: Object.keys(courseSelections).map(code => ({
+          course_code: code,
+          action: courseSelections[code]
+        }))
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      goToStage(2);
+    } else {
+      alert('Error updating courses: ' + result.message);
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error updating courses.');
+  }
+});
+
+document.getElementById('continue-btn-stage2').addEventListener('click', () => {
+  goToStage(3);
+});
+
+document.getElementById('continue-btn-stage3').addEventListener('click', () => {
+  const creditHoursInput = document.getElementById('credit-hours-input');
+  const creditHours = parseInt(creditHoursInput.value);
+
+  if (!creditHours || creditHours < 1 || creditHours > 18) {
+    alert('Please enter a valid number of credit hours (1-18).');
+    return;
+  }
+
+  selectedCreditHours = creditHours;
+  goToStage(4);
+  renderCourseSets();
+});
+
+async function renderCourseSets() {
+  const container = document.getElementById('course-sets-container');
+  const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+
+  if (!username) {
+    container.innerHTML = '<p class="section-subtitle">Please log in first.</p>';
+    return;
+  }
+
+  container.innerHTML = '<p class="section-subtitle">Loading recommended course sets...</p>';
+
+  fetch(`${API_BASE_URL}/api/recommend_course_sets?username=${encodeURIComponent(username)}&target_hours=${encodeURIComponent(selectedCreditHours)}`)
+    .then(res => res.json())
+    .then(result => {
+      if (!result.success || !result.data || !result.data.plans) {
+        container.innerHTML = '<p class="section-subtitle">Unable to compute course sets at this time.</p>';
+        return;
+      }
+
+      courseSetPlans = result.data.plans;
+
+      if (!courseSetPlans.length) {
+        container.innerHTML = '<p class="section-subtitle">No recommended course sets available for selected credit hours.</p>';
+        return;
+      }
+
+      container.innerHTML = '';
+
+      courseSetPlans.forEach((plan, index) => {
+        const setDiv = document.createElement('div');
+        setDiv.className = 'course-set';
+        setDiv.innerHTML = `
+          <h3>Set ${index + 1} - ${plan.label.replace(/_/g, ' ').toUpperCase()}</h3>
+          <p class="course-item-credits" style="margin-bottom:10px;">Estimated total: ${plan.total_credits} credit hours</p>
+        `;
+
+        plan.entries.forEach(entry => {
+          if (entry.kind === 'course') {
+            const course = entry.course;
+            setDiv.innerHTML += `
+              <div class="course-item">
+                <div class="course-item-code">${course.pretty_code}</div>
+                <div class="course-item-name">${course.name}</div>
+                <div class="course-item-credits">Credits: ${course.credits}</div>
+              </div>
+            `;
+          } else if (entry.kind === 'choice_group') {
+            setDiv.innerHTML += `
+              <div class="course-item">
+                <div class="course-item-code">${entry.label}</div>
+                <div class="course-item-name">Pick one</div>
+                <div class="course-item-credits">Options: ${entry.options.map(opt => opt.pretty_code).join(', ')}</div>
+              </div>
+            `;
+          }
+        });
+
+        setDiv.innerHTML += `<button class="continue-btn" style="margin-top: 8px;" onclick="selectCourseSet(${index})">Select This Set</button>`;
+        container.appendChild(setDiv);
+      });
+    })
+    .catch(error => {
+      console.error('Error loading recommendations:', error);
+      container.innerHTML = '<p class="section-subtitle">Error loading recommendations.</p>';
+    });
+}
+
+function selectCourseSet(index) {
+  selectedSetIndex = index;
+  selectedSetCourses = [];
+
+  const plan = courseSetPlans[index];
+  plan.entries.forEach(entry => {
+    if (entry.kind === 'course') {
+      selectedSetCourses.push(entry.course.code);
+    } else if (entry.kind === 'choice_group' && entry.options.length > 0) {
+      selectedSetCourses.push(entry.options[0].code);
+    }
+  });
+
+  document.getElementById('course-sets-container').innerHTML = '';
+  renderSelectedSetDetails();
+}
+
+function renderSelectedSetDetails() {
+  const container = document.getElementById('selected-set-container');
+  container.innerHTML = '';
+
+  if (selectedSetCourses.length === 0) {
+    container.innerHTML = '<p class="section-subtitle">No courses selected in this set. Go back and choose a set.</p>';
+    return;
+  }
+
+  const title = document.createElement('h3');
+  title.className = 'section-title';
+  title.style.fontSize = '18px';
+  title.textContent = 'Selected Set Courses';
+  container.appendChild(title);
+
+  selectedSetCourses.forEach((courseCode, idx) => {
+    const courseItem = document.createElement('div');
+    courseItem.className = 'course-item';
+    courseItem.innerHTML = `
+      <div class="course-item-code">${courseCode.toUpperCase()}</div>
+      <div class="course-item-name">Course can be modified or removed</div>
+      <div class="course-item-credits" id="course-${idx}-status"></div>
+      <div style="margin-top:8px; display:flex; gap:8px;">
+        <button class="action-button btn-completed" style="max-width:150px;" onclick="promptModifyCourse(${idx})">Modify</button>
+        <button class="action-button btn-drop" style="max-width:120px;" onclick="removeCourseFromSet(${idx})">Remove</button>
+      </div>
+    `;
+    container.appendChild(courseItem);
+  });
+
+  const help = document.createElement('div');
+  help.className = 'message-box';
+  help.style.background = 'rgba(250, 204, 21, 0.15)';
+  help.style.color = '#fde68a';
+  help.style.border = '1px solid rgba(250, 204, 21, 0.35)';
+  help.innerHTML = '<p>Modify example: enter a course like "CSE 4310" or "cse4310". Eligibility is checked by your major rules.</p>';
+  container.appendChild(help);
+
+  const confirmButton = document.createElement('button');
+  confirmButton.className = 'continue-btn';
+  confirmButton.textContent = 'Confirm and Add to In Progress';
+  confirmButton.onclick = confirmSelectedSet;
+  container.appendChild(confirmButton);
+}
+
+async function promptModifyCourse(index) {
+  const oldCode = selectedSetCourses[index];
+  const newCourse = prompt(`Replace ${oldCode.toUpperCase()} with a new course (e.g., CSE 4310):`, oldCode);
+
+  if (!newCourse) return;
+
+  const normalizedNew = newCourse.trim();
+  if (normalizedNew.length === 0) {
+    alert('Please enter a valid course code.');
+    return;
+  }
+
+  try {
+    const eligible = await validateCourseEligibility(normalizedNew);
+    if (!eligible) {
+      alert(`${normalizedNew} is not eligible based on your current completed/in-progress status.`);
+      return;
+    }
+
+    selectedSetCourses[index] = normalizedNew;
+    renderSelectedSetDetails();
+  } catch (error) {
+    console.error('Eligibility check failed:', error);
+    alert('Error validating course eligibility.');
+  }
+}
+
+function removeCourseFromSet(index) {
+  selectedSetCourses.splice(index, 1);
+  renderSelectedSetDetails();
+}
+
+async function validateCourseEligibility(courseCode) {
+  const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+  if (!username) throw new Error('User is not logged in');
+
+  const response = await fetch(`${API_BASE_URL}/api/course_eligibility?username=${encodeURIComponent(username)}&course_code=${encodeURIComponent(courseCode)}`);
+  const result = await response.json();
+  if (!result.success) throw new Error(result.message || 'Eligibility check failed');
+
+  return result.data?.eligible === true;
+}
+
+async function confirmSelectedSet() {
+  if (selectedSetCourses.length === 0) {
+    alert('No courses remain to add to in progress.');
+    return;
+  }
+
+  const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+  if (!username) {
+    alert('Please log in first.');
+    return;
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/add_courses_in_progress`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: username, courses: selectedSetCourses })
+  });
+
+  const result = await response.json();
+  if (!result.success) {
+    alert('Could not add courses in progress: ' + (result.message || 'Unknown error'));
+    return;
+  }
+
+  alert('Courses added to in-progress successfully!');
+  document.getElementById('course-sets-container').innerHTML = '';
+  document.getElementById('selected-set-container').innerHTML = '<p class="section-subtitle">Added to in-progress. Process complete.</p>';
+}
+
+document.getElementById('btnLogout').addEventListener('click', function () {
+  sessionStorage.removeItem('username');
+  localStorage.removeItem('username');
+  window.location.href = '/';
+});
+
+document.addEventListener('DOMContentLoaded', async function () {
+  await loadSidebarProfile();
+  await loadCoursesInProgress();
+});
+</script>
+</body>
+</html>

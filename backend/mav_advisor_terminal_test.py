@@ -52,7 +52,7 @@ def _save_user(data: dict) -> None:
 
 
 def _plan_module_for_degree(degree: str) -> str:
-    return "cs_course" if degree.strip().lower() == "cs" else "ce_course"
+    return "cs_course" if degree.strip().lower() == "computer science" or degree.strip().lower() == "cs" else "ce_course"
 
 
 def _load_certificates_for_degree(degree: str) -> dict:
@@ -349,7 +349,19 @@ def _get_certificate_progress(
 
     return progress
 
+def get_major_hours(major: str) -> int | None:
+    if not major:
+        return None
 
+    major = major.strip().lower()
+
+    if major == "computer science":
+        return 123
+    elif major == "computer engineering":
+        return 124
+    else:
+        return None
+    
 def _print_certificate_summary(certificate_progress: dict, G) -> None:
     if not certificate_progress:
         return
@@ -400,7 +412,7 @@ def main() -> None:
     if choice == "1" and user is None:
         degree_choice = input("Select degree plan: (1) cs  (2) ce\nEnter 1 or 2: ").strip()
         degree = "cs" if degree_choice == "1" else "ce"
-
+        print(degree.upper())
         certificates = _load_certificates_for_degree(degree)
         all_keywords = cert_help.get_unique_certificate_keywords(certificates)
 
@@ -508,6 +520,60 @@ def main() -> None:
     user["completed_courses"] = sorted(final_completed)
     user["in_progress_courses"] = sorted(final_in_progress)
     _save_user(user)
+
+
+# ============= CLUB HELPER FUNCTIONS =============
+
+def get_user_joined_clubs(uta_id: str) -> list[str]:
+    """Get list of club IDs that a user has joined"""
+    user = _load_user(uta_id.lower())
+    if not user:
+        return []
+    return user.get("clubs", {}).get("joined", [])
+
+
+def add_club_to_user(uta_id: str, club_id: str) -> bool:
+    """Add a club to user's joined clubs. Returns True if successful."""
+    user = _load_user(uta_id.lower())
+    if not user:
+        return False
+    
+    clubs_section = user.setdefault("clubs", {})
+    joined = clubs_section.setdefault("joined", [])
+    
+    if club_id not in joined:
+        joined.append(club_id)
+        user["clubs"] = clubs_section
+        _save_user(user)
+        return True
+    return False
+
+
+def remove_club_from_user(uta_id: str, club_id: str) -> bool:
+    """Remove a club from user's joined clubs. Returns True if successful."""
+    user = _load_user(uta_id.lower())
+    if not user:
+        return False
+    
+    clubs_section = user.setdefault("clubs", {})
+    joined = clubs_section.setdefault("joined", [])
+    
+    if club_id in joined:
+        joined.remove(club_id)
+        user["clubs"] = clubs_section
+        _save_user(user)
+        return True
+    return False
+
+
+def get_user_club_count(uta_id: str) -> int:
+    """Get number of clubs a user has joined"""
+    return len(get_user_joined_clubs(uta_id.lower()))
+
+
+def is_user_in_club(uta_id: str, club_id: str) -> bool:
+    """Check if user has joined a specific club"""
+    return club_id in get_user_joined_clubs(uta_id.lower())
 
 
 if __name__ == "__main__":

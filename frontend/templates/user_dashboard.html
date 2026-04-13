@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-glass: rgba(15, 20, 30, 0.72);
+      --bg-card: rgba(20, 28, 42, 0.78);
+      --bg-sidebar: rgba(12, 16, 26, 0.88);
+      --accent-blue: #5b8dee;
+      --accent-orange: #e07b39;
+      --text-primary: #e8eaf0;
+      --text-secondary: #8a95a8;
+      --text-muted: #5a6478;
+      --border: rgba(255,255,255,0.07);
+      --filter-dot-gray: #8b93a6;
+      --filter-dot-green: #3ecf8e;
+      --filter-dot-red: #e24a5a;
+    }
+
+    html {
+      height: 100%;
+      min-height: 100vh;
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      min-height: 100vh;
+      height: 100%;
+      margin: 0;
+      display: flex;
+      color: var(--text-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      background-image: url("{{ url_for('static', filename='images/background.png') }}");
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 12, 22, 0.55);
+      z-index: 1;
+    }
+
+    .layout {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      width: 100%;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .sidebar {
+      width: 268px;
+      min-height: 100%;
+      align-self: stretch;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0 18px;
+      backdrop-filter: blur(18px);
+      flex-shrink: 0;
+      box-shadow: inset -1px 0 0 rgba(91,141,238,0.15), inset 0 0 40px rgba(91,141,238,0.08);
+    }
+
+    .user-section {
+      padding: 0 22px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .user-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3a5bd9, #5b8dee);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .user-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .user-level {
+      font-size: 13px;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 3px 0;
+    }
+
+    .user-level::before { content: '✦'; font-size: 10px; }
+    .user-dept { font-size: 13px; color: var(--text-muted); }
+
+    .user-email {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.35;
+    }
+
+    .user-email::before { content: '✉'; font-size: 12px; }
+
+    nav { padding: 22px 14px 0; flex: 1; }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 0 8px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(91,141,238,0.25), rgba(91,141,238,0.08));
+      color: var(--accent-blue);
+      border-left: 2px solid var(--accent-blue);
+    }
+
+    .nav-icon { font-size: 16px; width: 22px; text-align: center; }
+    .nav-group { margin-top: 22px; }
+
+    .logout {
+      margin: 14px 14px 12px;
+      padding: 11px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Sora', sans-serif;
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+
+    .logout:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(91,141,238,0.4);
+      color: var(--text-primary);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.12);
+    }
+
+    .main {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .topbar {
+      padding: 32px 36px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,15,25,0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+    .page-sub { font-size: 15px; color: var(--text-secondary); margin-top: 4px; }
+
+    .btn-upload {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, rgba(74,125,232,0.8), rgba(123,92,232,0.8));
+      color: #fff;
+      border: 1px solid rgba(91,141,238,0.4);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-upload:hover {
+      background: linear-gradient(135deg, rgba(74,125,232,0.95), rgba(123,92,232,0.95));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn-upload:active {
+      transform: translateY(0);
+    }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 28px;
+      padding: 32px 36px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      align-content: start;
+    }
+
+    .left-col { display: flex; flex-direction: column; gap: 24px; }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      padding: 28px;
+    }
+
+    .degree-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .degree-header h2 { font-size: 19px; font-weight: 600; }
+
+    .credit-badge {
+      background: var(--accent-blue);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    .degree-body { display: flex; align-items: center; gap: 32px; }
+
+    .circle-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+    }
+
+    .circle-wrap svg { transform: rotate(-90deg); }
+
+    .circle-bg { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 8; }
+
+    .circle-prog {
+      fill: none;
+      stroke: url(#grad);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 314;
+      stroke-dashoffset: 314;
+      transition: stroke-dashoffset 0.8s ease;
+    }
+
+    .circle-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .circle-pct { font-size: 28px; font-weight: 700; }
+    .circle-label { font-size: 12px; color: var(--text-secondary); }
+
+    .degree-info h3 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+    .degree-info p { font-size: 15px; color: var(--text-secondary); line-height: 1.45; }
+
+    .courses-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .courses-header h2 { font-size: 19px; font-weight: 600; }
+    .courses-right { display: flex; align-items: center; gap: 10px; }
+    .pill-wrap { position: relative; z-index: 5; }
+
+    .pill-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(20, 28, 42, 0.6);
+      border: 1px solid rgba(91,141,238,0.35);
+      border-radius: 12px;
+      padding: 9px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text-primary);
+      font-family: 'Sora', sans-serif;
+      min-width: 172px;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.08);
+    }
+
+    .pill-filter:hover {
+      background: rgba(20, 28, 42, 0.8);
+      border-color: rgba(91,141,238,0.5);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.12);
+    }
+
+    .pill-filter .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--accent-orange);
+    }
+
+    .pill-filter .dot.dot-all { background: var(--filter-dot-gray); }
+    .pill-filter .dot.dot-progress { background: var(--accent-orange); }
+    .pill-filter .dot.dot-complete { background: var(--filter-dot-green); }
+    .pill-filter .dot.dot-not-started { background: var(--filter-dot-red); }
+
+    .pill-filter .chev {
+      margin-left: auto;
+      font-size: 10px;
+      opacity: 0.65;
+      transform: scaleY(0.85);
+    }
+
+    .pill-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 200px;
+      background: rgba(12, 14, 18, 0.98);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 6px;
+      z-index: 25;
+      box-shadow: 0 16px 50px rgba(0,0,0,0.55);
+    }
+
+    .pill-menu[hidden] { display: none !important; }
+
+    .status-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      text-align: left;
+      background: rgba(91,141,238,0.08);
+      border: 1px solid transparent;
+      color: var(--text-primary);
+      font-family: 'Sora', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 13px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .status-menu-item:hover {
+      background: rgba(91,141,238,0.15);
+      border-color: rgba(91,141,238,0.3);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+    
+    .status-menu-item.is-active {
+      background: rgba(91,141,238,0.25);
+      border-color: rgba(91,141,238,0.4);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.12);
+    }
+
+    .status-menu-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .status-menu-dot.dot-all { background: var(--filter-dot-gray); }
+    .status-menu-dot.dot-progress { background: var(--accent-orange); }
+    .status-menu-dot.dot-complete { background: var(--filter-dot-green); }
+    .status-menu-dot.dot-not-started { background: var(--filter-dot-red); }
+
+    .search-wrap { display: flex; align-items: center; gap: 8px; }
+
+    .search-input {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-size: 14px;
+      color: var(--text-primary);
+      font-family: 'Sora', sans-serif;
+      outline: none;
+      width: 210px;
+    }
+
+    .search-input::placeholder { color: var(--text-muted); }
+
+    .btn-search {
+      background: rgba(91,141,238,0.7);
+      color: #fff;
+      border: 1px solid rgba(91,141,238,0.5);
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.12);
+    }
+
+    .btn-search:hover {
+      background: rgba(91,141,238,0.9);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+    }
+
+    .course-table { width: 100%; border-collapse: collapse; }
+
+    .course-table thead tr { border-bottom: 1px solid var(--border); }
+
+    .course-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 0 0 14px;
+    }
+
+    .course-table th:last-child { text-align: right; }
+    .course-table tbody tr { border-bottom: 1px solid var(--border); }
+    .course-table tbody tr:last-child { border-bottom: none; }
+    .course-table td { padding: 16px 0; font-size: 15px; }
+    .course-table td:last-child { text-align: right; }
+
+    .course-badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      background: rgba(91,110,245,0.25);
+      color: #8da4f7;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-badge.status-progress {
+      background: rgba(212,98,42,0.2);
+      border: 1px solid rgba(212,98,42,0.35);
+      color: #e8884a;
+    }
+
+    .status-badge.status-progress .status-dot { background: #e8884a; }
+
+    .status-badge.status-complete {
+      background: rgba(62,207,142,0.16);
+      border: 1px solid rgba(62,207,142,0.35);
+      color: #5ee0a8;
+    }
+
+    .status-badge.status-complete .status-dot { background: var(--filter-dot-green); }
+
+    .status-badge.status-not-started {
+      background: rgba(226,74,90,0.16);
+      border: 1px solid rgba(226,74,90,0.35);
+      color: #f07885;
+    }
+
+    .status-badge.status-not-started .status-dot { background: var(--filter-dot-red); }
+
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .empty-row {
+      text-align: center;
+      color: var(--text-secondary);
+      padding: 20px 0;
+      font-size: 14px;
+    }
+
+    .right-col { display: flex; flex-direction: column; gap: 24px; }
+
+    .clubs-card h2 {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .club-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 0;
+      font-size: 15px;
+      line-height: 1.35;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .club-item:last-of-type { border-bottom: none; }
+
+    .club-item.empty {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .club-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      flex-shrink: 0;
+    }
+
+    .view-all {
+      display: block;
+      margin-top: 14px;
+      color: var(--accent-blue);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 10, 18, 0.62);
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .modal-card {
+      background: rgba(16, 22, 34, 0.95);
+      color: var(--text-primary);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      width: 460px;
+      max-width: 95%;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 22px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.5);
+      backdrop-filter: blur(16px);
+    }
+
+    .modal-card input,
+    .modal-card textarea,
+    .modal-card select,
+    .modal-card button {
+      font-family: 'Sora', sans-serif;
+    }
+
+    .modal-title {
+      margin-top: 0;
+      margin-bottom: 14px;
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .modal-field {
+      margin-bottom: 12px;
+    }
+
+    .modal-label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+    }
+
+    .modal-input {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 10px;
+      padding: 10px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text-primary);
+    }
+
+    .modal-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .modal-note {
+      margin-top: 10px;
+      min-height: 18px;
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+    }
+
+    .modal-subsection {
+      display: none;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .modal-subsection h4 {
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+
+    .modal-subsection p {
+      color: var(--text-secondary);
+      font-size: 0.82rem;
+      margin-bottom: 10px;
+    }
+
+    .btn-modal {
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .btn-modal-secondary {
+      border-color: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      color: var(--text-primary);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.12), 0 0 10px rgba(91,141,238,0.1);
+    }
+
+    .btn-modal-secondary:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(91,141,238,0.3);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-modal-primary {
+      background: linear-gradient(135deg, rgba(74,125,232,0.8), rgba(123,92,232,0.8));
+      color: #fff;
+      border: 1px solid rgba(91,141,238,0.4);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-modal-primary:hover {
+      background: linear-gradient(135deg, rgba(74,125,232,0.95), rgba(123,92,232,0.95));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.25);
+      transform: translateY(-1px);
+    }
+
+    .btn-modal-confirm {
+      background: linear-gradient(135deg, rgba(47,155,111,0.8), rgba(34,195,142,0.8));
+      color: #fff;
+      border: 1px solid rgba(34,195,142,0.4);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn-modal-confirm:hover {
+      background: linear-gradient(135deg, rgba(47,155,111,0.95), rgba(34,195,142,0.95));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.25);
+      transform: translateY(-1px);
+    }
+
+    .modal-actions {
+      display:flex;
+      justify-content:flex-end;
+      gap:8px;
+      margin-top:12px;
+    }
+
+    @media (max-width: 1100px) {
+      .content { grid-template-columns: 1fr; }
+      .right-col { order: 2; }
+      .left-col { order: 1; }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .layout { flex-direction: column; height: auto; }
+      .sidebar { width: 100%; min-height: auto; }
+      .topbar { padding: 20px; }
+      .content { padding: 20px; }
+      .courses-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .courses-right { width: 100%; flex-wrap: wrap; }
+      .search-input { width: 100%; max-width: 260px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="bg-overlay"></div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="user-section">
+      <div class="user-avatar" id="user-avatar">U</div>
+      <div class="user-name" id="user-name">Student</div>
+      <div class="user-level" id="user-level">Student</div>
+      <div class="user-dept" id="user-dept">Major</div>
+      <div class="user-email" id="user-email">student@mavs.uta.edu</div>
+    </div>
+
+    <nav>
+      <div class="nav-label">Main</div>
+      <a class="nav-item active" href="/user/dashboard"><span class="nav-icon">▦</span> Dashboard</a>
+      <a class="nav-item" href="/user/course-planner"><span class="nav-icon">📅</span> Course Planner</a>
+      <a class="nav-item" href="/user/ai-assistant"><span class="nav-icon">✦</span> AI Assistant</a>
+
+      <div class="nav-group">
+        <div class="nav-label">Campus</div>
+        <a class="nav-item" href="/user/clubs"><span class="nav-icon">⊞</span> Clubs &amp; Orgs</a>
+        <a class="nav-item" href="/user/event-calendar"><span class="nav-icon">🗓</span> Event Calendar</a>
+        <a class="nav-item" href="/user/certificates"><span class="nav-icon">🎓</span> Certifications</a>
+      </div>
+
+      <div class="nav-group">
+        <div class="nav-label">Account</div>
+        <a class="nav-item" href="/user/account-management"><span class="nav-icon">⚙</span> Account Settings</a>
+      </div>
+    </nav>
+
+    <button type="button" class="logout" id="btnLogout"><span>⎋</span> Log Out</button>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub" id="welcome-sub">Welcome back</div>
+      </div>
+      <button type="button" class="btn-upload" id="btnUpload">Upload Transcript</button>
+    </div>
+
+    <div class="content">
+      <div class="left-col">
+        <div class="card">
+          <div class="degree-header">
+            <h2>Overall Degree Completion</h2>
+            <div class="credit-badge" id="degree-credit-badge">0 / 0 Credits</div>
+          </div>
+          <div class="degree-body">
+            <div class="circle-wrap">
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <defs>
+                  <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#4a7de8"/>
+                    <stop offset="100%" style="stop-color:#7b5ce8"/>
+                  </linearGradient>
+                </defs>
+                <circle class="circle-bg" cx="60" cy="60" r="50"></circle>
+                <circle class="circle-prog" id="circle-progress" cx="60" cy="60" r="50"></circle>
+              </svg>
+              <div class="circle-text">
+                <span class="circle-pct" id="degree-percent">0%</span>
+                <span class="circle-label">completed</span>
+              </div>
+            </div>
+            <div class="degree-info">
+              <h3 id="degree-title">Your progress will appear here.</h3>
+              <p id="degree-summary">Login first to view progress.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="courses-header">
+            <h2>My Courses</h2>
+            <div class="courses-right">
+              <div class="pill-wrap">
+                <button type="button" class="pill-filter" id="pillBtn" aria-expanded="false" aria-haspopup="true">
+                  <span class="dot dot-progress" id="pillTriggerDot" aria-hidden="true"></span>
+                  <span id="pillLabel">In Progress</span>
+                  <span class="chev" aria-hidden="true">v</span>
+                </button>
+                <div class="pill-menu" id="pillMenu" hidden role="menu">
+                  <button type="button" class="status-menu-item" role="menuitem" data-filter="all"><span class="status-menu-dot dot-all" aria-hidden="true"></span> All</button>
+                  <button type="button" class="status-menu-item is-active" role="menuitem" data-filter="progress"><span class="status-menu-dot dot-progress" aria-hidden="true"></span> In Progress</button>
+                  <button type="button" class="status-menu-item" role="menuitem" data-filter="complete"><span class="status-menu-dot dot-complete" aria-hidden="true"></span> Complete</button>
+                  <button type="button" class="status-menu-item" role="menuitem" data-filter="not_started"><span class="status-menu-dot dot-not-started" aria-hidden="true"></span> Not Started</button>
+                </div>
+              </div>
+              <div class="search-wrap">
+                <input class="search-input" id="course-search" type="text" placeholder="Search courses..."/>
+                <button type="button" class="btn-search" id="btnSearch">Search</button>
+              </div>
+            </div>
+          </div>
+
+          <table class="course-table">
+            <thead>
+              <tr>
+                <th>Course ID</th>
+                <th>Course Name</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="courses-table-body">
+              <tr><td class="empty-row" colspan="3">No courses loaded yet</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="right-col">
+        <div class="card clubs-card">
+          <h2>My Clubs</h2>
+          <div id="my-clubs-list"></div>
+          <a class="view-all" href="#">View all on Mavengage</a>
+        </div>
+
+        <div class="card clubs-card">
+          <h2>My Certifications</h2>
+          <div id="my-certifications-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="transcript-modal" class="modal">
+  <div class="modal-card">
+    <h3 class="modal-title">Upload Transcript / Enter Courses</h3>
+
+    <div class="modal-field">
+      <label class="modal-label">Completed course IDs (comma or newline separated):</label>
+      <textarea id="transcript-completed-courses" class="modal-input" rows="3"></textarea>
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">In-progress course IDs (comma or newline separated):</label>
+      <textarea id="transcript-in-progress-courses" class="modal-input" rows="3"></textarea>
+    </div>
+
+    <div class="modal-field">
+      <label class="modal-label">Or upload transcript file (pdf/txt):</label>
+      <input id="transcript-file" class="modal-input" type="file" accept=".pdf,.txt" />
+    </div>
+
+    <div class="modal-actions">
+      <button id="transcript-cancel" class="btn-modal btn-modal-secondary">Cancel</button>
+      <button id="transcript-submit" class="btn-modal btn-modal-primary">Submit</button>
+    </div>
+
+    <p id="transcript-message" class="modal-note"></p>
+
+    <div id="unidentified-section" class="modal-subsection">
+      <h4>Unidentified Courses</h4>
+      <p>Please choose how each unidentified course should be counted.</p>
+      <div id="unidentified-list"></div>
+      <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+        <button id="confirm-unidentified-btn" class="btn-modal btn-modal-confirm">Confirm Courses</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('runtime_config_js') }}"></script>
+<script>
+let dashboardCourses = [];
+let parsedRecognizedCourses = [];
+let parsedRecognizedInProgress = [];
+let parsedUnidentifiedCourses = [];
+let parsedUnidentifiedInProgress = [];
+let currentStatus = 'progress';
+
+const statusToFilter = {
+  'Complete': 'complete',
+  'In Progress': 'progress',
+  'Not Started': 'not_started'
+};
+
+const filterToStatusLabel = {
+  all: 'All',
+  progress: 'In Progress',
+  complete: 'Complete',
+  not_started: 'Not Started'
+};
+
+const dotClassByFilter = {
+  all: 'dot-all',
+  progress: 'dot-progress',
+  complete: 'dot-complete',
+  not_started: 'dot-not-started'
+};
+
+function makeInitials(name) {
+  const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return 'U';
+  if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function statusBadgeClass(status) {
+  if (status === 'Complete') return 'status-badge status-complete';
+  if (status === 'In Progress') return 'status-badge status-progress';
+  return 'status-badge status-not-started';
+}
+
+function renderCourses(courses) {
+  const tableBody = document.getElementById('courses-table-body');
+  tableBody.innerHTML = '';
+
+  if (!Array.isArray(courses) || courses.length === 0) {
+    tableBody.innerHTML = '<tr><td class="empty-row" colspan="3">No courses match the filter/search criteria.</td></tr>';
+    return;
+  }
+
+  courses.forEach((course) => {
+    const code = (course.code || '').trim();
+    const name = (course.name || '').trim();
+    const status = (course.status || 'Not Started').trim();
+    const displayName = name && name.toLowerCase() !== 'unknown' ? name : code;
+    const filterStatus = statusToFilter[status] || 'not_started';
+
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-status', filterStatus);
+    tr.innerHTML = [
+      '<td><span class="course-badge">' + code + '</span></td>',
+      '<td>' + displayName + '</td>',
+      '<td><span class="' + statusBadgeClass(status) + '"><span class="status-dot"></span>' + status + '</span></td>'
+    ].join('');
+    tableBody.appendChild(tr);
+  });
+}
+
+function applyFilters() {
+  const term = (document.getElementById('course-search').value || '').trim().toLowerCase();
+
+  const filtered = dashboardCourses.filter((course) => {
+    const statusToken = statusToFilter[course.status] || 'not_started';
+    const statusMatch = currentStatus === 'all' || statusToken === currentStatus;
+    if (!statusMatch) return false;
+
+    const code = (course.code || '').toLowerCase();
+    const name = (course.name || '').toLowerCase();
+    return !term || code.includes(term) || name.includes(term);
+  });
+
+  renderCourses(filtered);
+}
+
+function updateProgressUI(percent, hoursCompleted, totalHours) {
+  const safePercent = Math.max(0, Math.min(100, Number(percent) || 0));
+  const circle = document.getElementById('circle-progress');
+  const circumference = 314;
+  const offset = circumference - (safePercent / 100) * circumference;
+
+  document.getElementById('degree-percent').textContent = safePercent.toFixed(1) + '%';
+  document.getElementById('degree-credit-badge').textContent = String(hoursCompleted) + ' / ' + String(totalHours) + ' Credits';
+  document.getElementById('degree-summary').textContent = String(hoursCompleted) + ' out of ' + String(totalHours) + ' credit hours completed.';
+
+  if (safePercent >= 50) {
+    document.getElementById('degree-title').textContent = 'You are more than halfway there.';
+  } else {
+    document.getElementById('degree-title').textContent = 'Keep going. You are building momentum.';
+  }
+
+  circle.style.strokeDashoffset = String(offset);
+}
+
+function renderMySelections(selectedClubs, selectedCertifications) {
+  const clubsList = document.getElementById('my-clubs-list');
+  const certsList = document.getElementById('my-certifications-list');
+
+  const clubs = Array.isArray(selectedClubs) ? selectedClubs : [];
+  const certs = Array.isArray(selectedCertifications) ? selectedCertifications : [];
+
+  if (clubs.length === 0) {
+    clubsList.innerHTML = '<div class="club-item empty">No clubs selected yet.</div>';
+  } else {
+    clubsList.innerHTML = clubs
+      .map((club) => '<div class="club-item"><span class="club-dot"></span>' + escapeHtml(club.name || club.id || 'Club') + '</div>')
+      .join('');
+  }
+
+  if (certs.length === 0) {
+    certsList.innerHTML = '<div class="club-item empty">No certifications selected yet.</div>';
+  } else {
+    certsList.innerHTML = certs
+      .map((cert) => '<div class="club-item"><span class="club-dot"></span>' + escapeHtml(cert.name || cert.key || 'Certification') + '</div>')
+      .join('');
+  }
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = String(text || '');
+  return div.innerHTML;
+}
+
+async function renderUserProgress() {
+  const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+
+  if (!username) {
+    updateProgressUI(0, 0, 0);
+    document.getElementById('degree-title').textContent = 'Login required to load progress.';
+    dashboardCourses = [];
+    renderCourses([]);
+    renderMySelections([], []);
+    return;
+  }
+
+  document.getElementById('welcome-sub').textContent = 'Welcome back, ' + username + ' 👋';
+  document.getElementById('user-name').textContent = username;
+  document.getElementById('user-avatar').textContent = makeInitials(username);
+
+  try {
+    const resp = await fetch(API_BASE_URL + '/api/user/' + encodeURIComponent(username));
+    const result = await resp.json();
+
+    if (!result.success || !result.data) {
+      throw new Error(result.message || 'Unable to fetch progress');
+    }
+
+    const data = result.data;
+    const hoursCompleted = Number(data.hours_completed) || 0;
+    const totalHours = Number(data.total_hours) || 0;
+    const completionPercent = Number(data.completion_percent) || 0;
+
+    const classification = data.classification || 'Student';
+    const major = data.major || 'Major not set';
+    const email = data.email || 'No email on file';
+    document.getElementById('user-level').textContent = classification;
+    document.getElementById('user-dept').textContent = major;
+    document.getElementById('user-email').textContent = email;
+    renderMySelections(data.selected_clubs, data.selected_certificates);
+
+    updateProgressUI(completionPercent, hoursCompleted, totalHours);
+
+    dashboardCourses = [];
+    if (Array.isArray(data.courses_completed)) dashboardCourses.push(...data.courses_completed);
+    if (Array.isArray(data.courses_in_progress)) dashboardCourses.push(...data.courses_in_progress);
+    if (Array.isArray(data.courses_not_completed)) dashboardCourses.push(...data.courses_not_completed);
+
+    const dedup = new Map();
+    const statusPriority = { 'Complete': 3, 'In Progress': 2, 'Not Started': 1 };
+
+    dashboardCourses.forEach((course) => {
+      const key = course.code;
+      const existing = dedup.get(key);
+      if (!existing || (statusPriority[course.status] || 0) > (statusPriority[existing.status] || 0)) {
+        dedup.set(key, course);
+      }
+    });
+
+    dashboardCourses = Array.from(dedup.values()).sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+    applyFilters();
+  } catch (err) {
+    console.error('Error loading progress:', err);
+    document.getElementById('degree-title').textContent = 'Could not load progress data.';
+    document.getElementById('degree-summary').textContent = 'Please try again.';
+    dashboardCourses = [];
+    renderCourses([]);
+    renderMySelections([], []);
+  }
+}
+
+function renderUnidentifiedCourses(unidentifiedCompleted, unidentifiedInProgress) {
+  const section = document.getElementById('unidentified-section');
+  const list = document.getElementById('unidentified-list');
+
+  list.innerHTML = '';
+
+  const allItems = [
+    ...(Array.isArray(unidentifiedCompleted) ? unidentifiedCompleted : []),
+    ...(Array.isArray(unidentifiedInProgress) ? unidentifiedInProgress : [])
+  ];
+
+  allItems.forEach((item, index) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.marginBottom = '12px';
+    wrapper.style.padding = '10px';
+    wrapper.style.border = '1px solid #ddd';
+    wrapper.style.borderRadius = '6px';
+
+    const labelDiv = document.createElement('div');
+    labelDiv.style.marginBottom = '8px';
+
+    const statusText = item.status === 'in_progress' ? 'In Progress' : 'Completed';
+    labelDiv.innerHTML =
+      '<strong>Unidentified:</strong> ' + escapeHtml(item.raw) +
+      '<br><strong>Status:</strong> ' + statusText;
+
+    const selectLabel = document.createElement('label');
+    selectLabel.textContent = 'Choose how to count this course:';
+    selectLabel.style.display = 'block';
+    selectLabel.style.marginBottom = '4px';
+
+    const select = document.createElement('select');
+    select.className = 'resolved-course-select';
+    select.dataset.index = String(index);
+    select.dataset.status = item.status || 'completed';
+    select.style.width = '100%';
+    select.style.padding = '8px';
+    select.style.border = '1px solid #ccc';
+    select.style.borderRadius = '4px';
+
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'Select an option';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    select.appendChild(defaultOption);
+
+    (item.options || []).forEach((option) => {
+      const opt = document.createElement('option');
+      opt.value = option.value;
+      opt.textContent = option.label;
+      select.appendChild(opt);
+    });
+
+    wrapper.appendChild(labelDiv);
+    wrapper.appendChild(selectLabel);
+    wrapper.appendChild(select);
+    list.appendChild(wrapper);
+  });
+
+  section.style.display = allItems.length > 0 ? 'block' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  renderUserProgress();
+
+  const pillBtn = document.getElementById('pillBtn');
+  const pillMenu = document.getElementById('pillMenu');
+  const pillLabel = document.getElementById('pillLabel');
+  const pillTriggerDot = document.getElementById('pillTriggerDot');
+  const courseSearch = document.getElementById('course-search');
+  const btnSearch = document.getElementById('btnSearch');
+
+  function setTriggerFromFilter(f) {
+    pillLabel.textContent = filterToStatusLabel[f] || f;
+    pillTriggerDot.className = 'dot ' + (dotClassByFilter[f] || 'dot-all');
+
+    pillMenu.querySelectorAll('.status-menu-item').forEach((item) => {
+      item.classList.toggle('is-active', item.getAttribute('data-filter') === f);
+    });
+  }
+
+  function closePillMenu() {
+    pillMenu.hidden = true;
+    pillBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  pillBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const willOpen = pillMenu.hidden;
+    pillMenu.hidden = !willOpen;
+    pillBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+  });
+
+  pillMenu.querySelectorAll('button[data-filter]').forEach((b) => {
+    b.addEventListener('click', function (e) {
+      e.stopPropagation();
+      currentStatus = b.getAttribute('data-filter');
+      setTriggerFromFilter(currentStatus);
+      applyFilters();
+      closePillMenu();
+    });
+  });
+
+  document.addEventListener('click', closePillMenu);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closePillMenu();
+  });
+
+  btnSearch.addEventListener('click', applyFilters);
+  courseSearch.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') applyFilters();
+  });
+
+  const viewAll = document.querySelector('.view-all');
+  if (viewAll) {
+    viewAll.addEventListener('click', function (e) {
+      e.preventDefault();
+      window.open('https://mavengage.uta.edu/', '_blank', 'noopener');
+    });
+  }
+
+  const btnLogout = document.getElementById('btnLogout');
+  btnLogout.addEventListener('click', function () {
+    sessionStorage.removeItem('username');
+    localStorage.removeItem('username');
+    window.location.href = '/';
+  });
+
+  const transcriptButton = document.getElementById('btnUpload');
+  const transcriptModal = document.getElementById('transcript-modal');
+  const transcriptCancel = document.getElementById('transcript-cancel');
+  const transcriptSubmit = document.getElementById('transcript-submit');
+  const transcriptMessage = document.getElementById('transcript-message');
+  const transcriptCompletedCourses = document.getElementById('transcript-completed-courses');
+  const transcriptInProgressCourses = document.getElementById('transcript-in-progress-courses');
+  const transcriptFile = document.getElementById('transcript-file');
+  const unidentifiedSection = document.getElementById('unidentified-section');
+  const confirmUnidentifiedBtn = document.getElementById('confirm-unidentified-btn');
+
+  function closeModal() {
+    transcriptModal.style.display = 'none';
+    transcriptMessage.textContent = '';
+    transcriptMessage.style.color = '#333';
+    transcriptCompletedCourses.value = '';
+    transcriptInProgressCourses.value = '';
+    transcriptFile.value = '';
+    unidentifiedSection.style.display = 'none';
+    document.getElementById('unidentified-list').innerHTML = '';
+    parsedRecognizedCourses = [];
+    parsedRecognizedInProgress = [];
+    parsedUnidentifiedCourses = [];
+    parsedUnidentifiedInProgress = [];
+  }
+
+  async function finalizeParsedCourses(resolvedCourses) {
+    const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+
+    try {
+      const response = await fetch(API_BASE_URL + '/api/confirm_unidentified_courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: username,
+          recognized_courses: parsedRecognizedCourses,
+          recognized_in_progress: parsedRecognizedInProgress,
+          resolved_courses: resolvedCourses
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        transcriptMessage.style.color = 'green';
+        transcriptMessage.textContent = 'Courses saved successfully!';
+        setTimeout(function () {
+          closeModal();
+          renderUserProgress();
+        }, 900);
+      } else {
+        transcriptMessage.style.color = 'red';
+        transcriptMessage.textContent = result.message || 'Could not save courses';
+      }
+    } catch (err) {
+      transcriptMessage.style.color = 'red';
+      transcriptMessage.textContent = 'Server error while saving courses';
+      console.error(err);
+    }
+  }
+
+  transcriptButton.addEventListener('click', function () {
+    transcriptModal.style.display = 'flex';
+  });
+
+  transcriptCancel.addEventListener('click', closeModal);
+
+  transcriptSubmit.addEventListener('click', async function () {
+    transcriptMessage.style.color = '#333';
+    transcriptMessage.textContent = 'Submitting...';
+    unidentifiedSection.style.display = 'none';
+    document.getElementById('unidentified-list').innerHTML = '';
+
+    const enteredCompleted = transcriptCompletedCourses.value
+      .split(/[\n,]/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    const enteredInProgress = transcriptInProgressCourses.value
+      .split(/[\n,]/)
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
+
+    const username = sessionStorage.getItem('username') || localStorage.getItem('username');
+    if (!username) {
+      transcriptMessage.style.color = 'red';
+      transcriptMessage.textContent = 'You must be logged in to submit courses.';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('username', username);
+
+    if (enteredCompleted.length > 0 || enteredInProgress.length > 0) {
+      formData.append('courses', JSON.stringify({
+        completed_courses: enteredCompleted,
+        in_progress_courses: enteredInProgress
+      }));
+    }
+
+    if (transcriptFile.files.length > 0) {
+      formData.append('transcript', transcriptFile.files[0]);
+    }
+
+    if (
+      enteredCompleted.length === 0 &&
+      enteredInProgress.length === 0 &&
+      transcriptFile.files.length === 0
+    ) {
+      transcriptMessage.style.color = 'red';
+      transcriptMessage.textContent = 'Please enter courses or upload a file.';
+      return;
+    }
+
+    try {
+      const response = await fetch(API_BASE_URL + '/api/parse_courses', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        transcriptMessage.style.color = 'red';
+        transcriptMessage.textContent = result.message || 'Submission failed';
+        return;
+      }
+
+      parsedRecognizedCourses = result.recognized_courses || [];
+      parsedRecognizedInProgress = result.recognized_in_progress || [];
+      parsedUnidentifiedCourses = result.unidentified_courses || [];
+      parsedUnidentifiedInProgress = result.unidentified_in_progress || [];
+
+      const totalUnidentified =
+        parsedUnidentifiedCourses.length + parsedUnidentifiedInProgress.length;
+
+      if (totalUnidentified === 0) {
+        await finalizeParsedCourses([]);
+        return;
+      }
+
+      transcriptMessage.style.color = '#b45309';
+      transcriptMessage.textContent = 'Some courses could not be identified. Please confirm them below.';
+      renderUnidentifiedCourses(parsedUnidentifiedCourses, parsedUnidentifiedInProgress);
+    } catch (err) {
+      transcriptMessage.style.color = 'red';
+      transcriptMessage.textContent = 'Server error submitting transcript';
+      console.error(err);
+    }
+  });
+
+  confirmUnidentifiedBtn.addEventListener('click', async function () {
+    const selects = document.querySelectorAll('.resolved-course-select');
+    const resolvedCourses = [];
+    let hasEmpty = false;
+
+    const allUnidentified = [
+      ...parsedUnidentifiedCourses,
+      ...parsedUnidentifiedInProgress
+    ];
+
+    selects.forEach((select, index) => {
+      const value = select.value.trim();
+      if (!value) {
+        hasEmpty = true;
+      } else {
+        resolvedCourses.push({
+          raw: allUnidentified[index].raw,
+          selected_option: value,
+          status: allUnidentified[index].status || select.dataset.status || 'completed'
+        });
+      }
+    });
+
+    if (hasEmpty) {
+      transcriptMessage.style.color = 'red';
+      transcriptMessage.textContent = 'Please resolve all unidentified courses.';
+      return;
+    }
+
+    await finalizeParsedCourses(resolvedCourses);
+  });
+});
+</script>
+
+</body>
+</html>

@@ -23,6 +23,7 @@ from typing import Optional
 import networkx as nx
 
 from pdf_extract import parse_transcript_pdf
+from pdf_extract import parse_transcript_details
 
 
 # ----------------------------
@@ -126,6 +127,16 @@ def elective_slot_nodes_present(G: nx.DiGraph, elective: dict) -> list[str]:
 
 
 def next_open_slot_node(G: nx.DiGraph, completed: set[str], elective: dict) -> Optional[str]:
+    prefix = str(elective.get("slot_prefix", elective.get("name", "slot"))).strip()
+    slots = int(elective.get("slots", 0) or 0)
+
+    # Single-slot elective with a real placeholder node like "social" or "culture"
+    if slots == 1 and prefix in G.nodes:
+        if prefix not in completed:
+            return prefix
+        return None
+
+    # Multi-slot elective with real slot nodes like tech1..tech5
     nodes = elective_slot_nodes_present(G, elective)
     if nodes:
         for n in nodes:
@@ -133,11 +144,11 @@ def next_open_slot_node(G: nx.DiGraph, completed: set[str], elective: dict) -> O
                 return n
         return None
 
+    # Fallback synthetic slot names only if needed
     for n in make_slot_names(elective):
         if n not in completed:
             return n
     return None
-
 
 def _state_set(completed: set[str], in_progress: set[str]) -> set[str]:
     return set(completed) | set(in_progress)
@@ -740,9 +751,6 @@ def mark_elective_satisfied(
         slot = next_open_slot_node(G, completed, elective)
         if slot is not None:
             completed.add(slot)
-            prefix = str(elective.get("slot_prefix", elective.get("name", "slot"))).strip()
-            if slot not in G.nodes and prefix in G.nodes:
-                completed.add(prefix)
             return f"Counted toward {cur.upper()} as {slot.upper()}."
 
         carry = elective.get("carryover", None)
@@ -788,6 +796,38 @@ def print_unknown_menu(rules: dict) -> None:
         print(f"  {idx}) {name.upper()} (slots={slots}{carry_txt}){opts_txt}")
         idx += 1
     print(f"  {idx}) EXTRA (ignore)")
+
+def get_unknown_course_options(rules: dict) -> list[dict]:
+    e_map = list(electives_by_name(rules).keys())
+
+    options = []
+    for elective_name in e_map:
+        options.append({
+            "value": elective_name,
+            "label": elective_name.replace("_", " ").title()
+        })
+
+    options.append({
+        "value": "extra",
+        "label": "Extra"
+    })
+
+    return options
+
+
+def apply_unknown_course_selection(
+    G,
+    completed: set[str],
+    rules: dict,
+    selected_option: str,
+    raw_course: str
+) -> str:
+    if selected_option == "extra":
+        return f"{raw_course} counted as EXTRA."
+
+    return mark_elective_satisfied(G, completed, rules, selected_option)
+
+
 
 
 def fill_unknown_course(G: nx.DiGraph, completed: set[str], unknown_course_label: str, rules: dict) -> None:

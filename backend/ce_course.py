@@ -221,9 +221,50 @@ def build_graph() -> nx.DiGraph:
     G.add_edge('cse4316', 'cse4317', kind='prereq')
     return G
 
+def course_list() -> list[str]:
+    return ['cse1106', 'univ1131', 'cse2315', 'cse1310', 'cse1320', 'cse2312', 'cse1326', 'cse2441', 'cse3318', 'cse3380', 'math1426', 'math2425', 'phys1443', 'engl1301', 'phys1444', 'cse2440', 'math2326', 'ie3301', 'cse3320', 'cse3341', 'cse3442', 'cse3313', 'cse3323', 'cse4342', 'coms2302', 'cse3314', 'cse4316', 'cse4323', 'cse4317', 'tech1', 'tech2', 'tech3', 'history1', 'history2', 'pols2311', 'pols2312', 'creative_arts', 'social', 'culture', 'science']
+def build_course_list_with_elective_placeholders() -> list[str]:
+    """
+    Build a list of all course/node ids, then collapse elective option groups.
+
+    Rule:
+    - If an elective has options != None
+    - and slots < len(options)
+    then:
+      1. remove all option course ids from the full course list
+      2. add the elective group name once
+
+    Example:
+    - security: slots=1, options=[cse4380, cse4381, cse4382]
+      -> remove those 3 course ids
+      -> add "security"
+    """
+
+    G = build_graph()
+    rules = get_rules()
+
+    # get all node ids only
+    all_courses = [node_id for node_id, _ in G.nodes.items()]
+
+    for elective in rules.get("electives", []):
+        elective_name = elective.get("name")
+        options = elective.get("options")
+        slots = elective.get("slots", 0)
+
+        if options is not None and slots < len(options):
+            # remove each option course from the full course list
+            all_courses = [course for course in all_courses if course not in options]
+
+            # add the elective placeholder/group name once
+            if elective_name not in all_courses:
+                all_courses.append(elective_name)
+
+    return all_courses
 
 if __name__ == "__main__":
     G = build_graph()
     print("NODES:", G.number_of_nodes())
     print("EDGES:", G.number_of_edges())
     print("RULES:", get_rules())
+    final_course_list = build_course_list_with_elective_placeholders()
+    print(final_course_list)

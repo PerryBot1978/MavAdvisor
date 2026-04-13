@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MavAdvisor - Get Started</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-dark: #0a0f14;
+            --panel-bg: rgba(15, 20, 28, 0.9);
+            --panel-border: rgba(255, 255, 255, 0.14);
+            --card-bg: rgba(14, 19, 30, 0.88);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --accent: #2563eb;
+            --accent-soft: rgba(37, 99, 235, 0.22);
+            --text-main: #f8fafc;
+            --text-soft: #a8b1c0;
+            --input-bg: #1a2233;
+            --danger: #f87171;
+        }
+
+        body {
+            font-family: "Segoe UI", system-ui, sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-color: var(--bg-dark);
+            background-image:
+                linear-gradient(135deg, rgba(6, 10, 16, 0.72) 0%, rgba(8, 13, 20, 0.55) 45%, rgba(6, 10, 16, 0.78) 100%),
+                url("{{ url_for('static', filename='images/background.png') }}");
+            background-size: cover, cover;
+            background-position: center, center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+
+        button {
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        input, select {
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+        }
+
+        .page {
+            min-height: 100vh;
+            display: flex;
+            position: relative;
+        }
+
+        .layout {
+            width: 100%;
+            display: flex;
+            position: relative;
+            z-index: 1;
+        }
+
+        .left-panel {
+            width: 46%;
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .left-heading {
+            margin-bottom: 2rem;
+        }
+
+        .left-heading h1 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            line-height: 1.12;
+        }
+
+        .left-heading h1 span {
+            color: #3b82f6;
+        }
+
+        .left-heading p {
+            margin-top: 0.55rem;
+            color: #98a4b5;
+            font-size: 0.95rem;
+        }
+
+        .step-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+        }
+
+        .step-card {
+            border-radius: 14px;
+            padding: 1.05rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.95rem;
+            border: 1px solid var(--card-border);
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+        }
+
+        .step-card.active {
+            background: rgba(20, 34, 60, 0.93);
+            border-color: rgba(37, 99, 235, 0.7);
+            border-left: 3px solid var(--accent);
+            box-shadow: 0 4px 28px rgba(37, 99, 235, 0.18), 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        .step-card.active-2 {
+            background: rgba(17, 36, 30, 0.92);
+            border: 2px solid transparent;
+            background-image:
+                linear-gradient(rgba(10, 18, 16, 0.72), rgba(12, 22, 20, 0.58)),
+                linear-gradient(to right, #2f8e67, #3fb784, #74d5a8);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 0 0 0 1px rgba(88, 188, 138, 0.1), 0 4px 30px rgba(88, 188, 138, 0.2);
+        }
+
+        .step-card.done-step {
+            background: rgba(34, 48, 41, 0.75);
+            border-color: rgba(63, 183, 132, 0.45);
+        }
+
+        .step-card .card-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            flex-shrink: 0;
+        }
+
+        .step-card.active .card-icon {
+            background: var(--accent);
+            border-color: transparent;
+        }
+
+        .step-card.active-2 .card-icon {
+            background: #3fb784;
+            border-color: transparent;
+        }
+
+        .card-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: #ffffff;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .card-text h3 {
+            font-size: 0.9rem;
+            font-weight: 650;
+            margin-bottom: 0.15rem;
+            color: #e9eef7;
+        }
+
+        .card-text p {
+            font-size: 0.78rem;
+            color: #9aa5b4;
+        }
+
+        .right-panel {
+            width: 54%;
+            padding: 2.75rem 4rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-card {
+            width: 100%;
+            max-width: 460px;
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+            animation: fadeIn 0.35s ease;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.2rem;
+            flex-wrap: nowrap;
+            margin-bottom: 1.4rem;
+        }
+
+        .si-circle {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.08);
+            color: #64748b;
+        }
+
+        .si-circle.active {
+            background: var(--accent);
+            color: #ffffff;
+            box-shadow: 0 0 0 4px var(--accent-soft);
+        }
+
+        .si-circle.done {
+            background: #2d3d35;
+            color: #ffffff;
+        }
+
+        .si-line {
+            width: 42px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .si-line.done {
+            background: #3fb784;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.7rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .logo span {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .logo-orbit {
+            position: relative;
+            width: 36px;
+            height: 36px;
+        }
+
+        .orbit {
+            position: absolute;
+            border-radius: 50%;
+        }
+
+        .orbit.outer {
+            inset: 0;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .orbit.inner {
+            inset: 14%;
+            border: 2px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .cap {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cap svg {
+            width: 48%;
+            height: 48%;
+        }
+
+        .form-heading {
+            text-align: center;
+            margin-bottom: 1.45rem;
+        }
+
+        .form-heading h2 {
+            font-size: 1.28rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .form-heading p {
+            font-size: 0.82rem;
+            color: var(--text-soft);
+        }
+
+        .field {
+            margin-bottom: 0.95rem;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 0.78rem 1rem;
+            border-radius: 10px;
+            background: var(--input-bg);
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            color: #ffffff;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .field input::placeholder {
+            color: #64748b;
+        }
+
+        .field select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 2.5rem;
+        }
+
+        .field select option {
+            background: #1a2233;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.82rem;
+            border-radius: 10px;
+            border: none;
+            background: var(--accent);
+            color: #ffffff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.15rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.2s, transform 0.1s, opacity 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-primary svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .message {
+            min-height: 1.15rem;
+            margin-top: 0.95rem;
+            text-align: center;
+            font-size: 0.82rem;
+            color: #b5c0cf;
+        }
+
+        #keywordsSection {
+            margin-top: 1.35rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.09);
+            padding-top: 1.2rem;
+        }
+
+        .keywords-title {
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+            text-align: center;
+        }
+
+        .keywords-subtitle {
+            font-size: 0.78rem;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 0.9rem;
+        }
+
+        #keywordsContainer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.62rem;
+            margin-bottom: 0.95rem;
+        }
+
+        .keyword-item {
+            position: relative;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 0.78rem 0.72rem;
+            font-size: 0.8rem;
+            color: #dbe5f1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            transition: border-color 0.2s, background 0.2s;
+            user-select: none;
+        }
+
+        .keyword-item input {
+            width: 15px;
+            height: 15px;
+            accent-color: #3fb784;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .keyword-item:has(input:checked) {
+            border-color: rgba(63, 183, 132, 0.9);
+            background: rgba(63, 183, 132, 0.14);
+        }
+
+        .sign-in-link {
+            text-align: center;
+            margin-top: 0.85rem;
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        .sign-in-link a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .sign-in-link a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 980px) {
+            .layout {
+                flex-direction: column;
+            }
+
+            .left-panel,
+            .right-panel {
+                width: 100%;
+                padding: 1.4rem;
+            }
+
+            .left-panel {
+                padding-bottom: 0;
+            }
+
+            .left-heading h1 {
+                font-size: 2rem;
+            }
+
+            .form-card {
+                max-width: 100%;
+            }
+
+            #keywordsContainer {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="page" id="page-1">
+    <div class="layout">
+        <div class="left-panel">
+            <div class="left-heading">
+                <h1>Get started in<br><span>3 easy steps</span></h1>
+                <p>Create your account, choose certificate interests, then choose club interests</p>
+            </div>
+            <div class="step-cards">
+                <div class="step-card active" id="step-card-account">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="card-text">
+                        <h3>Create your account</h3>
+                        <p>Fill in your details to get started</p>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-card-certificates">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                            <path d="M2 17l10 5 10-5"></path>
+                            <path d="M2 12l10 5 10-5"></path>
+                        </svg>
+                    </div>
+                    <div class="card-text">
+                        <h3>Select certificate interests</h3>
+                        <p>Choose topics for certificate suggestions</p>
+                    </div>
+                </div>
+
+                <div class="step-card" id="step-card-clubs">
+                    <div class="card-icon">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <div class="card-text">
+                        <h3>Select club interests</h3>
+                        <p>Choose topics for club recommendations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="form-card">
+                <div class="step-indicator" id="step-indicator">
+                    <div class="si-circle active" id="circle-1">1</div>
+                    <div class="si-line" id="line-1"></div>
+                    <div class="si-circle" id="circle-2">2</div>
+                    <div class="si-line" id="line-2"></div>
+                    <div class="si-circle" id="circle-3">3</div>
+                </div>
+
+                <div class="logo">
+                    <div class="logo-orbit">
+                        <div class="orbit outer"></div>
+                        <div class="orbit inner"></div>
+                        <div class="cap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3L2 8l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5"></path>
+                                <path d="M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <span>MavAdvisor</span>
+                </div>
+
+                <div class="form-heading">
+                    <h2>Create your account</h2>
+                    <p>Start planning your academic journey</p>
+                </div>
+
+                <form id="registerForm">
+                    <div class="field">
+                        <input type="text" id="username" placeholder="Username" required>
+                    </div>
+
+                    <div class="field">
+                        <input type="email" id="email" placeholder="University Email" required>
+                    </div>
+
+                    <div class="field">
+                        <input type="password" id="password" placeholder="Password" required>
+                    </div>
+
+                    <div class="field">
+                        <select id="major" required>
+                            <option value="" disabled selected>Select your major</option>
+                            <option value="Computer Science">Computer Science</option>
+                            <option value="Computer Engineering">Computer Engineering</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <select id="classification" required>
+                            <option value="" disabled selected>Select classification</option>
+                            <option value="Freshman">Freshman</option>
+                            <option value="Sophomore">Sophomore</option>
+                            <option value="Junior">Junior</option>
+                            <option value="Senior">Senior</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="registerBtn">
+                        Register
+                        <svg viewBox="0 0 24 24">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                </form>
+
+                <p id="message" class="message"></p>
+
+                <div id="keywordsSection" style="display: none;">
+                    <h2 class="keywords-title" id="keywordsTitle">Select Certificate Interests</h2>
+                    <p class="keywords-subtitle" id="keywordsSubtitle">Choose at least one interest before continuing</p>
+                    <div id="keywordsContainer"></div>
+                    <button id="saveKeywordsBtn" type="button" class="btn-primary">Save Certificate Interests</button>
+                </div>
+
+                <p class="sign-in-link">Already have an account? <a href="/">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('runtime_config_js') }}"></script>
+
+<script>
+let registeredUsername = "";
+let registeredMajor = "";
+let interestStage = "certificates";
+
+function renderKeywords(keywords) {
+    const keywordsContainer = document.getElementById("keywordsContainer");
+    keywordsContainer.innerHTML = "";
+
+    keywords.forEach(function(keyword) {
+        const label = document.createElement("label");
+        label.className = "keyword-item";
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = keyword;
+        checkbox.className = "keyword-checkbox";
+
+        const text = document.createElement("span");
+        text.textContent = keyword;
+
+        label.appendChild(checkbox);
+        label.appendChild(text);
+        keywordsContainer.appendChild(label);
+    });
+}
+
+function showCertificateStep(keywords) {
+    document.getElementById("keywordsTitle").textContent = "Select Certificate Interests";
+    document.getElementById("keywordsSubtitle").textContent = "Choose at least one certificate interest before continuing";
+    document.getElementById("saveKeywordsBtn").textContent = "Save Certificate Interests";
+
+    renderKeywords(keywords);
+
+    document.getElementById("keywordsSection").style.display = "block";
+
+    document.getElementById("step-card-account").classList.remove("active");
+    document.getElementById("step-card-account").classList.add("done-step");
+    document.getElementById("step-card-certificates").classList.add("active-2");
+
+    document.getElementById("circle-1").classList.remove("active");
+    document.getElementById("circle-1").classList.add("done");
+    document.getElementById("circle-1").textContent = "✓";
+
+    document.getElementById("line-1").classList.add("done");
+    document.getElementById("circle-2").classList.add("active");
+}
+
+function showClubStep(keywords) {
+    document.getElementById("keywordsTitle").textContent = "Select Club Interests";
+    document.getElementById("keywordsSubtitle").textContent = "Choose at least one club interest before finishing";
+    document.getElementById("saveKeywordsBtn").textContent = "Save Club Interests";
+
+    renderKeywords(keywords);
+
+    document.getElementById("step-card-certificates").classList.remove("active-2");
+    document.getElementById("step-card-certificates").classList.add("done-step");
+    document.getElementById("step-card-clubs").classList.add("active-2");
+
+    document.getElementById("circle-2").classList.remove("active");
+    document.getElementById("circle-2").classList.add("done");
+    document.getElementById("circle-2").textContent = "✓";
+
+    document.getElementById("line-2").classList.add("done");
+    document.getElementById("circle-3").classList.add("active");
+}
+
+document.getElementById("registerForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const message = document.getElementById("message");
+    const registerButton = document.getElementById("registerBtn");
+
+    const data = {
+        username: document.getElementById("username").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value.trim(),
+        major: document.getElementById("major").value,
+        classification: document.getElementById("classification").value
+    };
+
+    if (!data.username || !data.email || !data.password || !data.major || !data.classification) {
+        message.textContent = "Please fill all required fields";
+        return;
+    }
+
+    registerButton.disabled = true;
+    message.textContent = "Registering...";
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/register`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+            message.textContent = result.message || "Registration failed";
+            registerButton.disabled = false;
+            return;
+        }
+
+        registeredUsername = result.user.username;
+        registeredMajor = result.user.major;
+        interestStage = "certificates";
+
+        if (result.keywords && result.keywords.length > 0) {
+            message.textContent = "Registered successfully. Now select your certificate interests.";
+            showCertificateStep(result.keywords);
+        } else {
+            message.textContent = "Registered successfully, but no certificate keywords were returned.";
+            registerButton.disabled = false;
+        }
+
+    } catch (error) {
+        message.textContent = "Server error";
+        console.error(error);
+        registerButton.disabled = false;
+    }
+});
+
+document.getElementById("saveKeywordsBtn").addEventListener("click", async function() {
+    const message = document.getElementById("message");
+    const saveButton = document.getElementById("saveKeywordsBtn");
+    const checkedKeywords = document.querySelectorAll(".keyword-checkbox:checked");
+
+    const selectedKeywords = Array.from(checkedKeywords).map(function(cb) {
+        return cb.value;
+    });
+
+    if (!registeredUsername) {
+        message.textContent = "No registered user found";
+        return;
+    }
+
+    if (selectedKeywords.length === 0) {
+        message.textContent = "Please select at least one interest";
+        return;
+    }
+
+    saveButton.disabled = true;
+
+    try {
+        if (interestStage === "certificates") {
+            message.textContent = "Saving certificate interests...";
+
+            const response = await fetch(`${API_BASE_URL}/api/fill_interests_certificates`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: registeredUsername,
+                    major: registeredMajor,
+                    interests: selectedKeywords
+                })
+            });
+
+            const result = await response.json();
+
+            if (!result.success) {
+                message.textContent = result.message || "Failed to save certificate interests";
+                saveButton.disabled = false;
+                return;
+            }
+
+            if (result.club_keywords && result.club_keywords.length > 0) {
+                interestStage = "clubs";
+                message.textContent = "Certificate interests saved. Now select your club interests.";
+                showClubStep(result.club_keywords);
+                saveButton.disabled = false;
+            } else {
+                message.textContent = "Certificate interests saved, but no club keywords were returned.";
+                saveButton.disabled = false;
+            }
+
+            return;
+        }
+
+        if (interestStage === "clubs") {
+            message.textContent = "Saving club interests...";
+
+            const response = await fetch(`${API_BASE_URL}/api/fill_interests_clubs`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    username: registeredUsername,
+                    interests: selectedKeywords
+                })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                message.textContent = "Club interests saved successfully! Redirecting to login...";
+                setTimeout(function() {
+                    window.location.href = "/";
+                }, 1200);
+            } else {
+                message.textContent = result.message || "Failed to save club interests";
+                saveButton.disabled = false;
+            }
+        }
+    } catch (error) {
+        message.textContent = "Server error while saving interests";
+        console.error(error);
+        saveButton.disabled = false;
+    }
+});
+</script>
+</body>
+</html>

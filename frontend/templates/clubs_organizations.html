@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Engineering Clubs — MAV Advisor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-glass: rgba(15, 20, 30, 0.72);
+      --bg-card: rgba(20, 28, 42, 0.78);
+      --bg-sidebar: rgba(12, 16, 26, 0.88);
+      --accent-blue: #5b8dee;
+      --accent-orange: #e07b39;
+      --text-primary: #e8eaf0;
+      --text-secondary: #8a95a8;
+      --text-muted: #5a6478;
+      --border: rgba(255,255,255,0.07);
+      --filter-dot-gray: #8b93a6;
+      --filter-dot-green: #3ecf8e;
+      --filter-dot-red: #e24a5a;
+      --text: #f8fafc;
+      --line: rgba(255, 255, 255, 0.1);
+      --blue: #2563eb;
+    }
+
+    html, body { height: 100%; min-height: 100vh; font-family: 'Sora', system-ui, sans-serif; color: var(--text); }
+    body { min-height: 100vh; margin: 0; display: flex; overflow: hidden; background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%); background-attachment: fixed; }
+    .app { display: flex; width: 100%; flex: 1; min-width: 0; min-height: 0; height: 100%; }
+    .sidebar {
+      width: 268px;
+      min-height: 100%;
+      align-self: stretch;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 28px 0 18px;
+      backdrop-filter: blur(18px);
+      flex-shrink: 0;
+      box-shadow: inset -1px 0 0 rgba(91,141,238,0.15), inset 0 0 40px rgba(91,141,238,0.08);
+    }
+
+    .user-section {
+      padding: 0 22px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+    .user-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #3a5bd9, #5b8dee); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 600; margin-bottom: 12px; color: #fff; }
+    .user-name { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .user-level {
+      font-size: 13px;
+      color: var(--accent-blue);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 3px 0;
+    }
+    .user-level::before { content: '✦'; font-size: 10px; }
+    .user-dept { font-size: 13px; color: var(--text-muted); }
+
+    .user-email {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.35;
+    }
+
+    .user-email::before { content: '✉'; font-size: 12px; }
+
+    nav { padding: 22px 14px 0; flex: 1; min-height: 0; overflow-y: auto; }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 0 8px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 2px;
+      text-decoration: none;
+    }
+
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+
+    .nav-item.active {
+      background: linear-gradient(90deg, rgba(91,141,238,0.25), rgba(91,141,238,0.08));
+      color: var(--accent-blue);
+      border-left: 2px solid var(--accent-blue);
+    }
+
+    .nav-icon { font-size: 16px; width: 22px; text-align: center; }
+    .nav-group { margin-top: 22px; }
+
+    .logout {
+      margin: 14px 14px 12px;
+      padding: 11px 14px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Sora', sans-serif;
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(8px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+
+    .logout:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(91,141,238,0.4);
+      color: var(--text-primary);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.12);
+    }
+
+    .main { flex: 1; display: flex; flex-direction: column; min-height: 0; overflow-y: auto; }
+
+    /* Match scrollbar chrome to the dashboard glass theme */
+    .main,
+    nav {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(91,141,238,0.55) rgba(255,255,255,0.05);
+    }
+
+    .main::-webkit-scrollbar,
+    nav::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    .main::-webkit-scrollbar-track,
+    nav::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+    }
+
+    .main::-webkit-scrollbar-thumb,
+    nav::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(91,141,238,0.8), rgba(123,92,232,0.75));
+      border-radius: 10px;
+      border: 2px solid rgba(10,14,24,0.7);
+    }
+
+    .main::-webkit-scrollbar-thumb:hover,
+    nav::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(180deg, rgba(108,155,243,0.9), rgba(140,109,242,0.85));
+    }
+    .page-head { padding: 32px 40px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .page-head-copy { min-width: 240px; }
+    .page-head h1 { font-size: 30px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; }
+    .page-head p { font-size: 15px; color: #8a95a8; font-weight: 500; }
+    .btn-my-clubs { background: linear-gradient(135deg, rgba(74,125,232,0.85), rgba(123,92,232,0.85)); color: #fff; border: 1px solid rgba(91,141,238,0.45); border-radius: 10px; padding: 11px 16px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn-my-clubs:hover { filter: brightness(1.08); }
+    .search-wrap { padding: 8px 40px 8px; }
+    .search-input { width: 100%; max-width: 560px; padding: 12px 16px; font-size: 14px; color: #f1f5f9; background: rgba(20, 28, 42, 0.6); border: 1px solid rgba(91,141,238,0.35); border-radius: 12px; backdrop-filter: blur(10px); outline: none; font-family: inherit; transition: all 0.2s; box-shadow: inset 0 1px 1px rgba(255,255,255,0.08); }
+    .search-input::placeholder { color: #5a6478; }
+    .search-input:focus { border-color: rgba(91,141,238,0.5); box-shadow: inset 0 1px 1px rgba(255,255,255,0.12); }
+
+    .section-block { padding: 24px 40px 32px; }
+    .section-block h2 { font-size: 20px; font-weight: 600; margin-bottom: 16px; }
+    .club-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .club-card { background: rgba(20, 28, 42, 0.78); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 20px; transition: all 0.2s; backdrop-filter: blur(16px); }
+    .club-card:hover { border-color: rgba(91,141,238,0.35); }
+    .club-card-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .club-icon-wrap { width: 40px; height: 40px; border-radius: 10px; background: rgba(91,141,238,0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .club-icon-wrap svg { width: 20px; height: 20px; stroke: #5b8dee; stroke-width: 2; fill: none; }
+    .club-card h3 { font-size: 15px; font-weight: 600; line-height: 1.35; color: #fff; }
+    .club-desc { font-size: 14px; line-height: 1.5; color: #8a95a8; margin-bottom: 16px; display: -webkit-box; line-clamp: 3; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .club-meta { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #8a95a8; margin-bottom: 16px; }
+    .club-meta svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+    .club-actions { display: flex; gap: 8px; }
+    .btn-join { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; font-size: 13px; font-weight: 600; font-family: inherit; border: 1px solid rgba(91,141,238,0.4); border-radius: 10px; background: linear-gradient(135deg, rgba(74,125,232,0.8), rgba(123,92,232,0.8)); color: #fff; cursor: pointer; transition: all 0.2s ease; backdrop-filter: blur(10px); box-shadow: inset 0 1px 1px rgba(255,255,255,0.15); }
+    .btn-join:hover:not(:disabled) { background: linear-gradient(135deg, rgba(74,125,232,0.95), rgba(123,92,232,0.95)); box-shadow: inset 0 1px 1px rgba(255,255,255,0.25); transform: translateY(-1px); }
+    .btn-join:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-join.is-selected { border-color: rgba(226,74,90,0.5); background: linear-gradient(135deg, rgba(177,57,71,0.9), rgba(226,74,90,0.85)); }
+    .btn-join svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; }
+    .btn-icon-only { width: 42px; min-width: 42px; padding: 0; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; background: rgba(255,255,255,0.03); color: #e2e8f0; cursor: pointer; transition: all 0.2s; backdrop-filter: blur(8px); }
+    .btn-icon-only:hover { background: rgba(255,255,255,0.08); border-color: rgba(91,141,238,0.3); }
+    .btn-icon-only svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; fill: none; }
+    .empty-state { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); border: 1px dashed rgba(255, 255, 255, 0.28); border-radius: 16px; padding: 48px 32px; text-align: center; }
+    .empty-icon { width: 48px; height: 48px; stroke: #8a95a8; margin: 0 auto 16px; }
+    .empty-state p { color: #e2e8f0; margin-bottom: 8px; font-size: 15px; }
+    .empty-state .sub { font-size: 14px; color: #8a95a8; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 1100px) { .club-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 768px) { .app { flex-direction: column; } .sidebar { width: 100%; min-height: auto; } .page-head, .search-wrap, .section-block { padding-left: 20px; padding-right: 20px; } .club-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="user-section">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-name" id="user-name">Student</div>
+        <div class="user-level" id="user-level">Junior</div>
+        <div class="user-dept" id="user-dept">Major</div>
+        <div class="user-email" id="user-email">student@mavs.uta.edu</div>
+      </div>
+
+      <nav>
+        <div class="nav-label">Main</div>
+        <a class="nav-item" href="/user/dashboard"><span class="nav-icon">▦</span> Dashboard</a>
+        <a class="nav-item" href="/user/course-planner"><span class="nav-icon">📅</span> Course Planner</a>
+        <a class="nav-item" href="/user/ai-assistant"><span class="nav-icon">✦</span> AI Assistant</a>
+
+        <div class="nav-group">
+          <div class="nav-label">Campus</div>
+          <a class="nav-item active" href="/user/clubs"><span class="nav-icon">⊞</span> Clubs &amp; Orgs</a>
+          <a class="nav-item" href="/user/event-calendar"><span class="nav-icon">🗓</span> Event Calendar</a>
+          <a class="nav-item" href="/user/certificates"><span class="nav-icon">🎓</span> Certifications</a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-label">Account</div>
+          <a class="nav-item" href="/user/account-management"><span class="nav-icon">⚙</span> Account Settings</a>
+        </div>
+      </nav>
+
+      <button type="button" class="logout" id="btnLogout"><span>⎋</span> Log Out</button>
+    </aside>
+
+    <main class="main">
+      <header class="page-head">
+        <div class="page-head-copy">
+          <h1>Engineering Clubs</h1>
+          <p>Discover and join student organizations</p>
+        </div>
+      </header>
+
+      <div class="search-wrap">
+        <input
+          id="club-search"
+          class="search-input"
+          type="search"
+          placeholder="Search clubs..."
+          autocomplete="off"
+        />
+      </div>
+
+      <section class="section-block" id="my-clubs-section">
+        <h2>My Clubs</h2>
+        <div id="my-clubs-grid" class="club-grid"></div>
+        <div id="my-clubs-empty" class="empty-state hidden">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <p>No selected clubs yet</p>
+        </div>
+      </section>
+
+      <section class="section-block">
+        <h2>Recommended Clubs</h2>
+        <div id="recommended-grid" class="club-grid"></div>
+        <div id="recommended-empty" class="empty-state hidden">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <p>No recommended clubs found in your profile</p>
+        </div>
+      </section>
+
+      <section class="section-block" style="padding-top: 0;">
+        <h2>All Clubs</h2>
+        <div id="all-clubs-grid" class="club-grid"></div>
+        <div id="all-clubs-empty" class="empty-state hidden">
+          <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <p>No clubs match your search</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="{{ url_for('runtime_config_js') }}"></script>
+  <script>
+    let recommendedClubs = [];
+    let allClubs = [];
+    let selectedClubs = [];
+    let currentUsername = '';
+    const API_ROOT = typeof API_BASE_URL === 'string' ? API_BASE_URL : '';
+
+    function getCurrentUsername() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromUrl = urlParams.get('username');
+      const fromSession = sessionStorage.getItem('username');
+      const username = (fromUrl && fromUrl !== 'username') ? fromUrl : fromSession;
+
+      if (!username) {
+        window.location.href = '/user/login';
+        return '';
+      }
+
+      // Keep session synchronized so sidebar navigation preserves identity.
+      sessionStorage.setItem('username', username);
+      return username;
+    }
+
+    function applyUsernameToNavLinks(username) {
+      if (!username) {
+        return;
+      }
+
+      const navLinks = document.querySelectorAll('.nav-item[href^="/user/"]');
+      navLinks.forEach((link) => {
+        try {
+          const url = new URL(link.getAttribute('href'), window.location.origin);
+          url.searchParams.set('username', username);
+          link.setAttribute('href', `${url.pathname}${url.search}`);
+        } catch (err) {
+          console.error('Unable to update nav link:', err);
+        }
+      });
+    }
+
+    async function loadSidebarProfile() {
+      currentUsername = getCurrentUsername();
+      if (!currentUsername) {
+        return;
+      }
+      try {
+        const response = await fetch(`${API_ROOT}/api/user/${encodeURIComponent(currentUsername)}`);
+        const result = await response.json();
+        if (result.success && result.data) {
+          const data = result.data;
+          document.getElementById('user-name').textContent = currentUsername;
+          document.getElementById('user-level').textContent = data.classification || 'Student';
+          document.getElementById('user-dept').textContent = data.major || 'Major';
+          document.getElementById('user-email').textContent = data.email || 'student@mavs.uta.edu';
+          const initials = currentUsername.substring(0, 1).toUpperCase();
+          document.getElementById('user-avatar').textContent = initials;
+        }
+      } catch (err) {
+        console.error('Error loading profile:', err);
+      }
+    }
+
+    async function loadClubs() {
+      currentUsername = getCurrentUsername();
+      if (!currentUsername) {
+        return;
+      }
+      try {
+        const response = await fetch(`${API_ROOT}/api/clubs/${encodeURIComponent(currentUsername)}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          recommendedClubs = result.data.recommended_clubs || [];
+          allClubs = result.data.all_clubs || [];
+          selectedClubs = result.data.selected_clubs || [];
+          renderClubs('');
+        } else {
+          console.error('Unable to load clubs data:', result.message || 'Unknown API error');
+        }
+      } catch (err) {
+        console.error('Error loading clubs:', err);
+      }
+    }
+
+    function renderClubs(searchQuery) {
+      const query = searchQuery.toLowerCase();
+
+      const filteredSelected = selectedClubs.filter(club =>
+        club.name.toLowerCase().includes(query) ||
+        club.description.toLowerCase().includes(query) ||
+        (club.keywords || []).some(keyword => keyword.toLowerCase().includes(query))
+      );
+
+      const filteredRecommended = recommendedClubs.filter(club =>
+        club.name.toLowerCase().includes(query) ||
+        club.description.toLowerCase().includes(query) ||
+        (club.keywords || []).some(keyword => keyword.toLowerCase().includes(query))
+      );
+
+      const filteredAll = allClubs.filter(club =>
+        club.name.toLowerCase().includes(query) ||
+        club.description.toLowerCase().includes(query) ||
+        (club.keywords || []).some(keyword => keyword.toLowerCase().includes(query))
+      );
+
+      renderClubSection('my-clubs-grid', 'my-clubs-empty', filteredSelected, 'selected');
+      renderClubSection('recommended-grid', 'recommended-empty', filteredRecommended, true);
+      renderClubSection('all-clubs-grid', 'all-clubs-empty', filteredAll, false);
+    }
+
+    function isClubSelected(clubId) {
+      return selectedClubs.some((club) => club.id === clubId);
+    }
+
+    async function addClub(clubId) {
+      const response = await fetch(`${API_ROOT}/api/clubs/join`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUsername, club_id: clubId })
+      });
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || 'Could not add club');
+      }
+      return result;
+    }
+
+    async function removeClub(clubId) {
+      const response = await fetch(`${API_ROOT}/api/clubs/leave`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: currentUsername, club_id: clubId })
+      });
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || 'Could not remove club');
+      }
+      return result;
+    }
+
+    function renderClubSection(gridId, emptyId, clubs, sectionType) {
+      const grid = document.getElementById(gridId);
+      const emptyState = document.getElementById(emptyId);
+
+      if (clubs.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      grid.innerHTML = clubs.map(club => `
+        <article class="club-card">
+          <div class="club-card-head">
+            <div class="club-icon-wrap">
+              <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <h3>${escapeHtml(club.name)}</h3>
+          </div>
+          <p class="club-desc">${escapeHtml(club.description)}</p>
+          <div class="club-meta">
+            <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            <span>${sectionType === 'selected' ? 'Selected' : (sectionType ? 'Recommended' : 'Available')}</span>
+          </div>
+          ${(club.keywords || []).length > 0 ? `<div style="margin: 12px 0; display: flex; gap: 6px; flex-wrap: wrap;">
+            ${(club.keywords || []).map(kw => `<span style="font-size: 12px; color: #5b8dee; background: rgba(91, 141, 238, 0.15); padding: 4px 8px; border-radius: 6px;">${escapeHtml(kw)}</span>`).join('')}
+          </div>` : ''}
+          <div class="club-actions">
+            <button class="btn-join ${isClubSelected(club.id) ? 'is-selected' : ''}" data-toggle-club="${escapeHtml(club.id)}">${isClubSelected(club.id) ? 'Remove' : 'Add'}</button>
+            <button class="btn-icon-only" title="External link" aria-label="External link">
+              <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </button>
+          </div>
+        </article>
+      `).join('');
+
+      grid.querySelectorAll('[data-toggle-club]').forEach((button) => {
+        button.addEventListener('click', async function () {
+          const clubId = button.getAttribute('data-toggle-club');
+          button.disabled = true;
+          try {
+            if (isClubSelected(clubId)) {
+              await removeClub(clubId);
+            } else {
+              await addClub(clubId);
+            }
+            await loadClubs();
+          } catch (error) {
+            console.error('Error updating selected clubs:', error);
+          } finally {
+            button.disabled = false;
+          }
+        });
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function escapeAttr(text) {
+      return text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    let searchTimeout;
+    document.getElementById('club-search').addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        renderClubs(e.target.value);
+      }, 300);
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const username = getCurrentUsername();
+      applyUsernameToNavLinks(username);
+
+      const btnLogout = document.getElementById('btnLogout');
+      if (btnLogout) {
+        btnLogout.addEventListener('click', function() {
+          sessionStorage.removeItem('username');
+          localStorage.removeItem('username');
+          window.location.href = '/';
+        });
+      }
+
+      loadSidebarProfile();
+      loadClubs();
+    });
+  </script>
+</body>
+</html>

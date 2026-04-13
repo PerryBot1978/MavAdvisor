@@ -6,21 +6,24 @@
 #   python pdf_extract.py "path/to/transcript.pdf"
 #
 # Usage (imported):
-#   from pdf_extract import parse_transcript_pdf
+#   from pdf_extract import parse_transcript_pdf, parse_in_progress_courses
 #   courses = parse_transcript_pdf("transcript.pdf")
+#   in_progress = parse_in_progress_courses("transcript.pdf")
 
 from __future__ import annotations
 
 import re
-import sys
 from pathlib import Path
-from typing import List
+from typing import List, Tuple
 
 import pdfplumber
 
-# Only match valid-looking course codes (avoids years like 2021)
+# Only match valid-looking course codes
 COURSE_RE = re.compile(r"\b([A-Z]{2,6})\s*[- ]?\s*([1-9]\d{3}[A-Z]?)\b")
 MONTH_RE = re.compile(r"\b(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|SEPT|OCT|NOV|DEC)\b", re.IGNORECASE)
+
+# Valid final letter grades
+GRADE_RE = re.compile(r"\b(A|B|C|D|F)\b(?:[+-])?", re.IGNORECASE)
 
 
 def extract_lines(pdf_path: str) -> List[str]:
@@ -46,46 +49,75 @@ def parse_course(line: str) -> str | None:
     return normalize_course(cm.group(1), cm.group(2))
 
 
-def parse_transcript_pdf(pdf_path: str) -> List[str]:
+def has_grade(line: str) -> bool:
+    return GRADE_RE.search(line) is not None
+
+
+def parse_transcript_details(pdf_path: str) -> Tuple[List[str], List[str]]:
+    """
+    Returns:
+        completed_courses: courses with a valid letter grade
+        courses_in_progress: courses found without a valid letter grade
+    """
     lines = extract_lines(pdf_path)
 
-    courses: List[str] = []
+    completed_courses: List[str] = []
+    courses_in_progress: List[str] = []
+
     for line in lines:
         # Skip term/date lines like "AUG 2021"
         if MONTH_RE.search(line):
             continue
 
         course = parse_course(line)
-        if course:
-            courses.append(course)
+        if not course:
+            continue
+
+        if has_grade(line):
+            completed_courses.append(course)
+        else:
+            courses_in_progress.append(course)
 
     # de-dupe while preserving order
-    seen = set()
-    out: List[str] = []
-    for c in courses:
-        if c not in seen:
-            seen.add(c)
-            out.append(c)
+    def dedupe(items: List[str]) -> List[str]:
+        seen = set()
+        out: List[str] = []
+        for item in items:
+            if item not in seen:
+                seen.add(item)
+                out.append(item)
+        return out
 
-    return out
+    return dedupe(completed_courses), dedupe(courses_in_progress)
+
+
+def parse_transcript_pdf(pdf_path: str) -> List[str]:
+    completed_courses, _ = parse_transcript_details(pdf_path)
+    return completed_courses
+
+
+def parse_in_progress_courses(pdf_path: str) -> List[str]:
+    _, courses_in_progress = parse_transcript_details(pdf_path)
+    return courses_in_progress
 
 
 def main() -> None:
-    if len(sys.argv) < 2:
-        print('Usage: python pdf_extract.py "path/to/transcript.pdf"')
-        sys.exit(1)
-
-    pdf_path = sys.argv[1]
-    if not Path(pdf_path).exists():
+    pdf_path = Path("transcript.pdf")
+    if not pdf_path.exists():
         raise FileNotFoundError(f"File not found: {pdf_path}")
 
-    out = parse_transcript_pdf(pdf_path)
-    if not out:
+    completed, in_progress = parse_transcript_details(pdf_path)
+
+    if not completed and not in_progress:
         print("No courses found. If this is a scanned PDF, selectable text will not extract.")
         return
 
-    print("COURSES FOUND:")
-    for c in out:
+    print("COMPLETED COURSES:")
+    for c in completed:
+        print(c)
+
+    print("\nCOURSES IN PROGRESS:")
+    for c in in_progress:
         print(c)
 
 

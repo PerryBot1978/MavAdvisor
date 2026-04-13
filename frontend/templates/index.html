@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MavAdvisor</title>
+
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+/* Fluid scale: grows ~1:1 with viewport width, capped for huge/tiny screens */
+html {
+  height:100%;
+  font-size:clamp(14px, 9px + 1.15vw, 24px);
+}
+
+/* Full-screen photo: same folder as this HTML (sd.jpeg on Desktop). */
+.page-bg {
+  position:fixed;
+  inset:0;
+  z-index:0;
+  background:#0a151b url("{{ url_for('static', filename='images/background.png') }}") center/cover no-repeat;
+  pointer-events:none;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  position:relative;
+  min-height:100vh;
+  min-height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:transparent;
+  overflow:hidden;
+  padding:clamp(0.75rem, 2.5vw, 2rem) clamp(0.5rem, 3vw, 2.5rem);
+}
+
+/* tint over the photo so text stays readable */
+body::before {
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:linear-gradient(135deg, rgba(10,15,25,0.45), rgba(10,15,25,0.62));
+}
+
+/* layout */
+.container {
+  position:relative;
+  z-index:2;
+  width:min(94%, clamp(20rem, 90vw, 92rem));
+  max-width:92rem;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:clamp(1rem, 4vw, 3.5rem);
+}
+
+/* LEFT SIDE */
+.left {
+  color:white;
+}
+
+#wrap {
+  position:relative;
+  width:100%;
+  max-width:min(43.75rem, 85vw);
+}
+
+canvas {
+  width:100%;
+}
+
+/* tagline */
+.tagline {
+  margin-top:clamp(1rem, 2vw, 1.5rem);
+  font-size:clamp(1.75rem, 1rem + 2.5vw, 2.75rem);
+  line-height:1.2;
+}
+
+.tagline span {
+  color:#3b82f6;
+}
+
+.tagline .career-highlight {
+  color:#f48208;
+}
+
+.subtext {
+  margin-top:clamp(0.75rem, 1.5vw, 1.1rem);
+  font-size:clamp(0.95rem, 0.85rem + 0.35vw, 1.15rem);
+  color:#cbd5e1;
+  max-width:min(25rem, 90vw);
+  line-height:1.45;
+}
+
+/* RIGHT SIDE LOGIN */
+.card {
+  width:min(100%, clamp(14.5rem, 18vw + 9rem, 21.5rem));
+  flex-shrink:0;
+  background:rgba(0,0,0,0.8);
+  backdrop-filter:blur(20px);
+  padding:clamp(0.95rem, 0.8rem + 0.7vw, 1.45rem) clamp(0.9rem, 0.78rem + 0.6vw, 1.35rem);
+  border-radius:clamp(0.9rem, 0.65rem + 0.5vw, 1.3rem);
+  border:1px solid rgba(255,255,255,0.1);
+  box-shadow:0 clamp(0.6rem, 2.5vw, 1.45rem) clamp(1.65rem, 4vw, 3.25rem) rgba(0,0,0,0.5);
+  color:white;
+}
+
+.card h2 {
+  font-size:clamp(1.02rem, 0.85rem + 0.65vw, 1.38rem);
+  font-weight:700;
+  letter-spacing:-0.02em;
+  margin-bottom:clamp(0.45rem, 0.3rem + 0.3vw, 0.72rem);
+}
+
+.card p:not(.card-signup) {
+  color:#9ca3af;
+  font-size:clamp(0.76rem, 0.72rem + 0.2vw, 0.88rem);
+  margin-bottom:clamp(0.85rem, 0.65rem + 0.65vw, 1.4rem);
+  line-height:1.45;
+}
+
+.card input {
+  width:100%;
+  padding:clamp(0.72rem, 0.55rem + 0.45vw, 0.98rem) clamp(0.75rem, 0.62rem + 0.5vw, 1.05rem);
+  margin-bottom:clamp(0.75rem, 0.55rem + 0.5vw, 1.05rem);
+  border-radius:clamp(0.45rem, 0.35rem + 0.2vw, 0.65rem);
+  border:1px solid #333;
+  background:#111;
+  color:white;
+  font-size:clamp(0.76rem, 0.72rem + 0.2vw, 0.9rem);
+  font-family:'Segoe UI',sans-serif;
+}
+
+.card input::placeholder {
+  color:#6b7280;
+}
+
+.card button {
+  width:100%;
+  padding:clamp(0.72rem, 0.55rem + 0.45vw, 0.98rem) clamp(0.75rem, 0.62rem + 0.5vw, 1.05rem);
+  background:#2563eb;
+  border:none;
+  border-radius:clamp(0.45rem, 0.35rem + 0.2vw, 0.65rem);
+  color:white;
+  cursor:pointer;
+  font-weight:600;
+  font-size:clamp(0.76rem, 0.72rem + 0.2vw, 0.9rem);
+  font-family:'Segoe UI',sans-serif;
+}
+
+.card button:hover {
+  background:#1d4ed8;
+}
+
+.card-signup {
+  margin-top:clamp(0.85rem, 0.65rem + 0.65vw, 1.35rem);
+  text-align:center;
+  font-size:clamp(0.72rem, 0.68rem + 0.18vw, 0.84rem);
+  color:#9ca3af;
+  line-height:1.5;
+}
+
+.card-signup a {
+  color:#3b82f6;
+  font-weight:600;
+  text-decoration:none;
+}
+
+.card-signup a:hover {
+  text-decoration:underline;
+  color:#60a5fa;
+}
+
+#message {
+  min-height:1.2em;
+  margin-top:0.3rem;
+  color:#cbd5e1;
+  font-size:clamp(0.72rem, 0.68rem + 0.18vw, 0.84rem);
+}
+
+/* CHALK TIP */
+#chalkTip {
+  position:absolute;
+  pointer-events:none;
+  opacity:0;
+}
+
+.chalk-body {
+  width:1.25rem;
+  height:0.45rem;
+  background:linear-gradient(90deg,#fff,#ddd);
+  border-radius:0.15rem;
+  transform:rotate(-40deg);
+  position:relative;
+}
+
+.d1,.d2,.d3 {
+  border-radius:50%;
+  position:absolute;
+}
+
+.d1 {
+  width:0.25rem;height:0.25rem;
+  background:rgba(255,255,255,0.8);
+  left:-0.55rem;top:0.06rem;
+  animation:d1 0.5s infinite;
+}
+
+.d2 {
+  width:0.2rem;height:0.2rem;
+  background:rgba(255,255,255,0.6);
+  left:-0.8rem;top:0.3rem;
+  animation:d2 0.7s infinite;
+}
+
+.d3 {
+  width:0.15rem;height:0.15rem;
+  background:rgba(255,255,255,0.4);
+  left:-0.6rem;top:-0.1rem;
+  animation:d3 0.6s infinite;
+}
+
+@keyframes d1 {
+  100% { transform:translate(-0.6rem,-0.85rem); opacity:0; }
+}
+@keyframes d2 {
+  100% { transform:translate(-0.95rem,-0.35rem); opacity:0; }
+}
+@keyframes d3 {
+  100% { transform:translate(-0.35rem,-1rem); opacity:0; }
+}
+
+@media (max-width: 56rem) {
+  .container {
+    flex-direction:column;
+    justify-content:center;
+    gap:clamp(1.25rem, 4vw, 2rem);
+  }
+  .left {
+    width:100%;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+  #wrap {
+    max-width:min(43.75rem, 100%);
+  }
+  .subtext {
+    max-width:36rem;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page-bg" aria-hidden="true"></div>
+
+<div class="container">
+
+  <!-- LEFT -->
+  <div class="left">
+    <div id="wrap">
+      <canvas id="c" width="700" height="120"></canvas>
+
+      <div id="chalkTip">
+        <div class="chalk-body">
+          <div class="d1"></div>
+          <div class="d2"></div>
+          <div class="d3"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tagline">
+      Your degree.<br/>
+      <span class="career-highlight">Your career.</span><br/>
+      <span>On track.</span>
+    </div>
+
+    <div class="subtext">
+      MavAdvisor helps students plan their academic journey and launch careers.
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="card">
+    <h2>Welcome back</h2>
+    <p>Sign in to your account</p>
+
+    <form id="loginForm">
+      <input type="text" id="username" placeholder="maverick123" autocomplete="username" required/>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required/>
+
+      <button type="submit" id="btnSignIn">Sign In →</button>
+    </form>
+
+    <p id="message"></p>
+
+    <p class="card-signup">Don't have an account? <a href="/user/register">Create one</a></p>
+  </div>
+
+</div>
+
+<script src="{{ url_for('runtime_config_js') }}"></script>
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const message = document.getElementById("message");
+
+  const data = {
+    username: document.getElementById("username").value.trim(),
+    password: document.getElementById("password").value.trim()
+  };
+
+  if (!data.username || !data.password) {
+    message.textContent = "Please fill all required fields";
+    return;
+  }
+
+  message.textContent = "Logging in...";
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/user/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      message.textContent = "Login successful!";
+      sessionStorage.setItem('username', data.username);
+      localStorage.removeItem('username');
+
+      setTimeout(function() {
+        window.location.href = "/user/dashboard";
+      }, 1000);
+    } else {
+      message.textContent = result.message || "Login failed";
+    }
+
+  } catch (error) {
+    message.textContent = "Server error";
+    console.error(error);
+  }
+});
+</script>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const tip = document.getElementById('chalkTip');
+
+const W=700,H=120,T=10,B=100,MID=55;
+const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+function resizeCanvas(){
+  canvas.width = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+resizeCanvas();
+
+function lerp(a,b,t){ return a+(b-a)*t; }
+
+function moveTip(x,y){
+  const r=canvas.getBoundingClientRect();
+  const pr=canvas.parentElement.getBoundingClientRect();
+  tip.style.left=(r.left-pr.left+x*(r.width/W)-10)+'px';
+  tip.style.top=(r.top-pr.top+y*(r.height/H)-4)+'px';
+}
+
+function chalkDot(x,y){
+  for(let j=0;j<6;j++){
+    ctx.beginPath();
+    ctx.arc(x+(Math.random()-0.5)*5,y+(Math.random()-0.5)*5,1+Math.random()*2,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${0.4+Math.random()*0.5})`;
+    ctx.fill();
+  }
+}
+
+function L(ox,...coords){
+  const pts=[];
+  for(let i=0;i<coords.length;i+=2){
+    pts.push({x:coords[i]+ox,y:coords[i+1]});
+  }
+  return pts;
+}
+
+function bezierPts(x0,y0,cx1,cy1,cx2,cy2,x1,y1,n){
+  n = n===undefined ? 28 : n;
+  const pts=[];
+  for(let i=0;i<=n;i++){
+    const t=i/n, mt=1-t;
+    pts.push({
+      x:mt*mt*mt*x0+3*mt*mt*t*cx1+3*mt*t*t*cx2+t*t*t*x1,
+      y:mt*mt*mt*y0+3*mt*mt*t*cy1+3*mt*t*t*cy2+t*t*t*y1
+    });
+  }
+  return pts;
+}
+
+const G=22, LW=44;
+const pos={
+  M:  8,
+  a:  8 + LW + G,
+  v1: 8 + 2*(LW+G),
+  A:  8 + 3*(LW+G),
+  d:  8 + 4*(LW+G),
+  v2: 8 + 5*(LW+G),
+  i:  8 + 6*(LW+G),
+  s:  8 + 6*(LW+G)+18+G,
+  o:  8 + 6*(LW+G)+18+G+LW+G,
+  r:  8 + 6*(LW+G)+18+G+2*(LW+G),
+};
+
+const allStrokes=[
+  L(pos.M,  0,B, 0,T),
+  L(pos.M,  0,T, 22,MID, 44,T),
+  L(pos.M,  44,T, 44,B),
+  L(pos.a,  0,B, 22,T),
+  L(pos.a,  22,T, 44,B),
+  L(pos.a,  7,MID+8, 37,MID+8),
+  L(pos.v1, 0,T, 22,B, 44,T),
+  L(pos.A,  0,B, 22,T),
+  L(pos.A,  22,T, 44,B),
+  L(pos.A,  7,MID+8, 37,MID+8),
+  L(pos.d,  0,T, 0,B),
+  L(pos.d,  0,T, 20,T),
+  L(pos.d,  0,B, 20,B),
+  bezierPts(pos.d+20,T, pos.d+60,T, pos.d+60,B, pos.d+20,B),
+  L(pos.v2, 0,T, 22,B, 44,T),
+  L(pos.i,  0,T, 16,T),
+  L(pos.i,  8,T, 8,B),
+  L(pos.i,  0,B, 16,B),
+  L(pos.s,  44,T, 0,T),
+  L(pos.s,  0,T, 0,MID),
+  L(pos.s,  0,MID, 44,MID),
+  L(pos.s,  44,MID, 44,B),
+  L(pos.s,  44,B, 0,B),
+  L(pos.o,  0,T, 44,T),
+  L(pos.o,  44,T, 44,B),
+  L(pos.o,  44,B, 0,B),
+  L(pos.o,  0,B, 0,T),
+  L(pos.r,  0,B, 0,T),
+  L(pos.r,  0,T, 30,T),
+  L(pos.r,  30,T, 44,T+16, 30,MID),
+  L(pos.r,  30,MID, 0,MID),
+  L(pos.r,  22,MID, 44,B),
+];
+
+function animateStroke(pts, cb){
+  let i=0;
+  function step(){
+    if(i>=pts.length){ cb(); return; }
+    const p=pts[i];
+    if(i>0){
+      const prev=pts[i-1];
+      const dist=Math.sqrt((p.x-prev.x)**2+(p.y-prev.y)**2);
+      const sub=Math.max(2, Math.floor(dist/2));
+      for(let s=0;s<=sub;s++){
+        chalkDot(lerp(prev.x,p.x,s/sub), lerp(prev.y,p.y,s/sub));
+      }
+    } else {
+      chalkDot(p.x,p.y);
+    }
+    moveTip(p.x,p.y);
+    i++;
+    setTimeout(step, 40);
+  }
+  step();
+}
+
+function run(){
+  ctx.clearRect(0,0,W,H);
+  tip.style.opacity='1';
+  let si=0;
+  function next(){
+    if(si>=allStrokes.length){
+      tip.style.opacity='0';
+      setTimeout(run, 1500);
+      return;
+    }
+    animateStroke(allStrokes[si], function(){ si++; setTimeout(next, 120); });
+  }
+  next();
+}
+
+run();
+</script>
+
+</body>
+</html>

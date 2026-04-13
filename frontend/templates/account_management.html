@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Management - MavAdvisor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-card: rgba(20, 28, 42, 0.78);
+      --accent-blue: #5b8dee;
+      --accent-green: #3ecf8e;
+      --accent-red: #e24a5a;
+      --text-primary: #e8eaf0;
+      --text-secondary: #8a95a8;
+      --text-muted: #5a6478;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html, body {
+      height: 100%;
+      min-height: 100vh;
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      min-height: 100vh;
+      height: 100%;
+      display: flex;
+      color: var(--text-primary);
+      position: relative;
+      overflow: hidden;
+      background: #0a0f18;
+    }
+
+    .bg {
+      position: fixed;
+      inset: 0;
+      background-image: url("{{ url_for('static', filename='images/background.png') }}");
+      background-size: cover;
+      background-position: center;
+      z-index: 0;
+    }
+
+    .bg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(8, 12, 22, 0.55);
+      z-index: 1;
+    }
+
+    .layout {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .topbar {
+      padding: 32px 36px 24px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,15,25,0.3);
+      backdrop-filter: blur(8px);
+    }
+
+    .page-title { font-size: 26px; font-weight: 700; letter-spacing: -0.3px; }
+    .page-sub { font-size: 14px; color: var(--text-secondary); margin-top: 6px; }
+
+    .content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 28px 36px 36px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      align-content: start;
+    }
+
+    .content {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(91,141,238,0.55) rgba(255,255,255,0.05);
+    }
+
+    .content::-webkit-scrollbar { width: 10px; height: 10px; }
+    .content::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); border-radius: 10px; }
+    .content::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(91,141,238,0.8), rgba(123,92,232,0.75));
+      border-radius: 10px;
+      border: 2px solid rgba(10,14,24,0.7);
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      backdrop-filter: blur(16px);
+      padding: 22px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    }
+
+    .card h2 {
+      font-size: 18px;
+      font-weight: 650;
+      margin-bottom: 10px;
+    }
+
+    .card p.sub {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .field { margin-bottom: 12px; }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: 'Sora', sans-serif;
+      outline: none;
+    }
+
+    .field input:focus { border-color: rgba(91,141,238,0.55); }
+
+    .btn {
+      border: 1px solid rgba(91,141,238,0.45);
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Sora', sans-serif;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(74,125,232,0.85), rgba(123,92,232,0.85));
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.15);
+    }
+
+    .btn:hover { filter: brightness(1.08); }
+
+    .btn-danger {
+      border-color: rgba(226,74,90,0.5);
+      background: linear-gradient(135deg, rgba(177,57,71,0.9), rgba(226,74,90,0.85));
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .message {
+      margin-top: 10px;
+      min-height: 18px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .message.error { color: #f78b96; }
+    .message.success { color: #8fe8be; }
+
+    .keywords-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .keyword-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 10px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 9px;
+      background: rgba(255,255,255,0.04);
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .keyword-item input[type="checkbox"] {
+      accent-color: var(--accent-blue);
+    }
+
+    .card.full {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 1100px) {
+      .content { grid-template-columns: 1fr; }
+      .card.full { grid-column: auto; }
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .layout { flex-direction: column; height: auto; }
+      .topbar { padding: 20px; }
+      .content { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="bg-overlay"></div>
+
+  <div class="layout">
+    {% include 'sidebar.html' %}
+
+    <main class="main">
+      <header class="topbar">
+        <div class="page-title">Account Management</div>
+        <div class="page-sub">Manage your password, account, and interests.</div>
+      </header>
+
+      <section class="content">
+        <article class="card">
+          <h2>Change Password</h2>
+          <p class="sub">Update your account password securely.</p>
+          <form id="changePasswordForm">
+            <div class="field">
+              <label for="currentPassword">Current Password</label>
+              <input type="password" id="currentPassword" required />
+            </div>
+            <div class="field">
+              <label for="newPassword">New Password</label>
+              <input type="password" id="newPassword" minlength="6" required />
+            </div>
+            <div class="field">
+              <label for="confirmPassword">Confirm New Password</label>
+              <input type="password" id="confirmPassword" minlength="6" required />
+            </div>
+            <button type="submit" class="btn">Update Password</button>
+            <div id="passwordMessage" class="message"></div>
+          </form>
+        </article>
+
+        <article class="card">
+          <h2>Delete Account</h2>
+          <p class="sub">This is permanent and cannot be undone. You will be redirected to home.</p>
+          <div class="field">
+            <label for="deletePassword">Enter Password to Confirm</label>
+            <input type="password" id="deletePassword" />
+          </div>
+          <label class="checkbox-row">
+            <input type="checkbox" id="deleteConfirm" />
+            I understand this action is irreversible.
+          </label>
+          <button type="button" id="deleteAccountBtn" class="btn btn-danger" disabled>Delete Account</button>
+          <div id="deleteMessage" class="message"></div>
+        </article>
+
+        <article class="card full">
+          <h2>Edit Interests</h2>
+          <p class="sub">Update certificate and club interests. This uses the same recommendation logic as registration.</p>
+
+          <h3 style="font-size:15px; margin: 6px 0 10px; color: var(--text-primary);">Certificate Interests</h3>
+          <div id="certificateKeywords" class="keywords-grid"></div>
+          <button type="button" class="btn" id="saveCertificateInterestsBtn">Save Certificate Interests</button>
+          <div id="certInterestsMessage" class="message"></div>
+
+          <h3 style="font-size:15px; margin: 18px 0 10px; color: var(--text-primary);">Club Interests</h3>
+          <div id="clubKeywords" class="keywords-grid"></div>
+          <button type="button" class="btn" id="saveClubInterestsBtn">Save Club Interests</button>
+          <div id="clubInterestsMessage" class="message"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="{{ url_for('runtime_config_js') }}"></script>
+  <script>
+    let currentUsername = '';
+    let currentMajor = '';
+
+    function setMessage(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text || '';
+      el.className = 'message' + (type ? ' ' + type : '');
+    }
+
+    function renderKeywords(containerId, keywords, selected) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      const selectedSet = new Set(selected || []);
+
+      (keywords || []).forEach((keyword) => {
+        const label = document.createElement('label');
+        label.className = 'keyword-item';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = keyword;
+        checkbox.checked = selectedSet.has(keyword);
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(keyword));
+        container.appendChild(label);
+      });
+    }
+
+    function getSelectedKeywords(containerId) {
+      return Array.from(document.querySelectorAll('#' + containerId + ' input[type="checkbox"]:checked'))
+        .map((cb) => cb.value);
+    }
+
+    async function loadInterests() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/account/interests/${encodeURIComponent(currentUsername)}`);
+        const result = await response.json();
+
+        if (!result.success || !result.data) {
+          throw new Error(result.message || 'Could not load interests');
+        }
+
+        currentMajor = result.data.major || '';
+        renderKeywords('certificateKeywords', result.data.certificate_keywords || [], result.data.certificate_interests || []);
+        renderKeywords('clubKeywords', result.data.club_keywords || [], result.data.club_interests || []);
+      } catch (err) {
+        setMessage('certInterestsMessage', 'Failed to load interests.', 'error');
+        setMessage('clubInterestsMessage', 'Failed to load interests.', 'error');
+        console.error(err);
+      }
+    }
+
+    function setupDeleteButtonState() {
+      const checkbox = document.getElementById('deleteConfirm');
+      const password = document.getElementById('deletePassword');
+      const button = document.getElementById('deleteAccountBtn');
+      button.disabled = !(checkbox.checked && password.value.trim());
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      currentUsername = sessionStorage.getItem('username') || '';
+
+      if (!currentUsername) {
+        window.location.href = '/user/login';
+        return;
+      }
+
+      loadInterests();
+
+      document.getElementById('changePasswordForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (newPassword !== confirmPassword) {
+          setMessage('passwordMessage', 'New password and confirmation do not match.', 'error');
+          return;
+        }
+
+        try {
+          setMessage('passwordMessage', 'Updating password...');
+          const response = await fetch(`${API_BASE_URL}/api/account/change-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: currentUsername,
+              current_password: currentPassword,
+              new_password: newPassword
+            })
+          });
+          const result = await response.json();
+
+          if (!result.success) {
+            setMessage('passwordMessage', result.message || 'Failed to update password.', 'error');
+            return;
+          }
+
+          setMessage('passwordMessage', 'Password updated successfully.', 'success');
+          document.getElementById('changePasswordForm').reset();
+        } catch (err) {
+          setMessage('passwordMessage', 'Server error while updating password.', 'error');
+          console.error(err);
+        }
+      });
+
+      document.getElementById('saveCertificateInterestsBtn').addEventListener('click', async function () {
+        const selected = getSelectedKeywords('certificateKeywords');
+
+        if (!selected.length) {
+          setMessage('certInterestsMessage', 'Select at least one certificate interest.', 'error');
+          return;
+        }
+
+        try {
+          setMessage('certInterestsMessage', 'Saving certificate interests...');
+          const response = await fetch(`${API_BASE_URL}/api/fill_interests_certificates`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: currentUsername,
+              major: currentMajor,
+              interests: selected
+            })
+          });
+
+          const result = await response.json();
+          if (!result.success) {
+            setMessage('certInterestsMessage', result.message || 'Failed to save certificate interests.', 'error');
+            return;
+          }
+
+          setMessage('certInterestsMessage', 'Certificate interests updated.', 'success');
+        } catch (err) {
+          setMessage('certInterestsMessage', 'Server error while saving certificate interests.', 'error');
+          console.error(err);
+        }
+      });
+
+      document.getElementById('saveClubInterestsBtn').addEventListener('click', async function () {
+        const selected = getSelectedKeywords('clubKeywords');
+
+        if (!selected.length) {
+          setMessage('clubInterestsMessage', 'Select at least one club interest.', 'error');
+          return;
+        }
+
+        try {
+          setMessage('clubInterestsMessage', 'Saving club interests...');
+          const response = await fetch(`${API_BASE_URL}/api/fill_interests_clubs`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: currentUsername,
+              interests: selected
+            })
+          });
+
+          const result = await response.json();
+          if (!result.success) {
+            setMessage('clubInterestsMessage', result.message || 'Failed to save club interests.', 'error');
+            return;
+          }
+
+          setMessage('clubInterestsMessage', 'Club interests updated.', 'success');
+        } catch (err) {
+          setMessage('clubInterestsMessage', 'Server error while saving club interests.', 'error');
+          console.error(err);
+        }
+      });
+
+      document.getElementById('deleteConfirm').addEventListener('change', setupDeleteButtonState);
+      document.getElementById('deletePassword').addEventListener('input', setupDeleteButtonState);
+
+      document.getElementById('deleteAccountBtn').addEventListener('click', async function () {
+        const password = document.getElementById('deletePassword').value.trim();
+        if (!password) {
+          setMessage('deleteMessage', 'Enter password to confirm deletion.', 'error');
+          return;
+        }
+
+        if (!confirm('Delete your account permanently? This cannot be undone.')) {
+          return;
+        }
+
+        try {
+          setMessage('deleteMessage', 'Deleting account...');
+          const response = await fetch(`${API_BASE_URL}/api/account/delete`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              username: currentUsername,
+              password: password
+            })
+          });
+
+          const result = await response.json();
+          if (!result.success) {
+            setMessage('deleteMessage', result.message || 'Failed to delete account.', 'error');
+            return;
+          }
+
+          sessionStorage.removeItem('username');
+          localStorage.removeItem('username');
+          window.location.href = '/';
+        } catch (err) {
+          setMessage('deleteMessage', 'Server error while deleting account.', 'error');
+          console.error(err);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

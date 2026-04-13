@@ -260,9 +260,50 @@ def build_graph() -> nx.DiGraph:
 
     return G
 
+def course_list() -> list[str]:
+    return ['coms2302', 'creative_arts', 'cse1106', 'cse1310', 'cse1320', 'cse1325', 'cse2312', 'cse2315', 'cse3302', 'cse3310', 'cse3314', 'cse3315', 'cse3318', 'cse3320', 'cse3330', 'cse3380', 'cse4308', 'cse4316', 'cse4317', 'cse4344', 'engl1301', 'history1', 'history2', 'culture', 'ie3301', 'math1426', 'math2326', 'math2425', 'phys1443', 'phys1444', 'pols2311', 'pols2312', 'univ1131', 'social', 'tech1', 'tech2', 'tech3', 'tech4', 'tech5', 'security', 'tech_options']
+def build_course_list_with_elective_placeholders() -> list[str]:
+    """
+    Build a list of all course/node ids, then collapse elective option groups.
+
+    Rule:
+    - If an elective has options != None
+    - and slots < len(options)
+    then:
+      1. remove all option course ids from the full course list
+      2. add the elective group name once
+
+    Example:
+    - security: slots=1, options=[cse4380, cse4381, cse4382]
+      -> remove those 3 course ids
+      -> add "security"
+    """
+
+    G = build_graph()
+    rules = get_rules()
+
+    # get all node ids only
+    all_courses = [node_id for node_id, _ in G.nodes.items()]
+
+    for elective in rules.get("electives", []):
+        elective_name = elective.get("name")
+        options = elective.get("options")
+        slots = elective.get("slots", 0)
+
+        if options is not None and slots < len(options):
+            # remove each option course from the full course list
+            all_courses = [course for course in all_courses if course not in options]
+
+            # add the elective placeholder/group name once
+            if elective_name not in all_courses:
+                all_courses.append(elective_name)
+
+    return all_courses
 
 if __name__ == "__main__":
     G = build_graph()
     print("NODES:", G.number_of_nodes())
     print("EDGES:", G.number_of_edges())
     print("RULES:", get_rules())
+    final_course_list = build_course_list_with_elective_placeholders()
+    print(final_course_list)
