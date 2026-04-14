@@ -2,3 +2,5 @@ Flask
 openai
 flask_cors
 networkx
+pdfplumber
+werkzeug
