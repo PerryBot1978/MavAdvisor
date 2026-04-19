@@ -4,9 +4,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
 
-FRONTEND_RUN_HOST = os.getenv("FRONTEND_RUN_HOST", "127.0.0.1")
-FRONTEND_RUN_PORT = int(os.getenv("FRONTEND_RUN_PORT", "5000"))
-FRONTEND_RUN_DEBUG = os.getenv("FRONTEND_RUN_DEBUG", "true").strip().lower() in {"1", "true", "yes", "on"}
+FRONTEND_RUN_HOST = os.getenv("FRONTEND_RUN_HOST", "0.0.0.0")
+FRONTEND_RUN_PORT = int(os.getenv("FRONTEND_RUN_PORT", "8080"))
+FRONTEND_RUN_DEBUG = os.getenv("FRONTEND_RUN_DEBUG", "false").strip().lower() in {"1", "true", "yes", "on"}
 
 BACKEND_HOST = os.getenv("BACKEND_HOST", "127.0.0.1")
 BACKEND_PORT = int(os.getenv("BACKEND_PORT", "5001"))

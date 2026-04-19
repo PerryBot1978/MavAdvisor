@@ -7,7 +7,7 @@ USERS_DIR = BASE_DIR / "users"
 
 BACKEND_RUN_HOST = os.getenv("BACKEND_RUN_HOST", "127.0.0.1")
 BACKEND_RUN_PORT = int(os.getenv("BACKEND_RUN_PORT", "5001"))
-BACKEND_RUN_DEBUG = os.getenv("BACKEND_RUN_DEBUG", "true").strip().lower() in {"1", "true", "yes", "on"}
+BACKEND_RUN_DEBUG = os.getenv("BACKEND_RUN_DEBUG", "false").strip().lower() in {"1", "true", "yes", "on"}
 
 
 USERS_DIR.mkdir(exist_ok=True)
