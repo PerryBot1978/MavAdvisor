@@ -22,7 +22,7 @@ def hello_world():
 @app.route('/config.js')
 def runtime_config_js():
     payload = {
-        "API_BASE_URL": BACKEND_API_BASE,
+        "API_BASE_URL": "",
         "FRONTEND_BASE_URL": FRONTEND_BASE_URL,
         "FRONTEND_LOGIN_URL": FRONTEND_LOGIN_URL,
         "FRONTEND_REGISTER_URL": FRONTEND_REGISTER_URL,
