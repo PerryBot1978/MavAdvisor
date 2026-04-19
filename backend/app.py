@@ -239,7 +239,7 @@ def fill_interest_clubs():
     }), 200
 
 
-@app.route('/user/login', methods=['POST'])
+@app.route('/api/login', methods=['POST'])
 def login():
     data = request.get_json()
 
