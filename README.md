@@ -4,8 +4,8 @@
 
 ```
 mavadvisors/
-├── backend/        # Flask API server (port 5001)
-├── frontend/       # Flask template server (port 5000)
+├── backend/        # Flask API server (default port 5001)
+├── frontend/       # Flask template server (default port 8080)
 ├── clear_cache.py  # Clear Python cache
 └── README.md       # This file
 ```
@@ -32,9 +32,9 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Frontend runs at **http://127.0.0.1:5000**
+Frontend runs at **http://127.0.0.1:8080** (default; override with `FRONTEND_RUN_PORT`)
 
-Visit **http://127.0.0.1:5000** in your browser.
+Visit **http://127.0.0.1:8080** in your browser.
 
 ---
 
@@ -61,8 +61,8 @@ Environment variables:
 
 | Variable | Default | Required | Purpose |
 |----------|---------|----------|---------|
-| `FRONTEND_RUN_HOST` | `127.0.0.1` | No | Frontend server host |
-| `FRONTEND_RUN_PORT` | `5000` | No | Frontend server port |
+| `FRONTEND_RUN_HOST` | `0.0.0.0` | No | Frontend server host |
+| `FRONTEND_RUN_PORT` | `8080` | No | Frontend server port |
 | `FRONTEND_RUN_DEBUG` | `true` | No | Debug mode |
 | `BACKEND_HOST` | `127.0.0.1` | No | Backend host (for API calls) |
 | `BACKEND_PORT` | `5001` | No | Backend port (for API calls) |
@@ -72,7 +72,7 @@ Environment variables:
 
 **Create `.env` in `frontend/` folder:**
 ```
-FRONTEND_RUN_PORT=5000
+FRONTEND_RUN_PORT=8080
 BACKEND_API_BASE=http://127.0.0.1:5001
 OPENAI_API_KEY=sk-proj-your-key-here
 ```
@@ -158,4 +158,4 @@ cd frontend
 OPENAI_API_KEY=your-key python app.py
 ```
 
-Then open browser to **http://127.0.0.1:5000**
+Then open browser to **http://127.0.0.1:8080**

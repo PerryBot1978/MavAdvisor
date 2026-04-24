@@ -397,11 +397,28 @@
       .content { padding: 20px; }
       .three-sets { grid-template-columns: 1fr; }
     }
+
+    @media (max-width: 640px) {
+      .topbar { padding: 16px; }
+      .content { padding: 16px; }
+      .topbar h1 { font-size: 22px; }
+      .sidebar .nav-item {
+        padding: 14px 14px;
+        font-size: 16px;
+        min-height: 44px;
+      }
+      .logout {
+        padding: 14px 14px;
+        min-height: 44px;
+        justify-content: center;
+      }
+    }
   </style>
 </head>
 <body>
 <div class="bg"></div>
 <div class="bg-overlay"></div>
+{% include 'mobile_drawer_nav.html' %}
 
 <div class="layout">
   <aside class="sidebar">

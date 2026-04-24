@@ -207,9 +207,20 @@
 
     @media (max-width: 1100px) { .club-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 768px) { .app { flex-direction: column; } .sidebar { width: 100%; min-height: auto; } .page-head, .search-wrap, .section-block { padding-left: 20px; padding-right: 20px; } .club-grid { grid-template-columns: 1fr; } }
+
+    @media (max-width: 640px) {
+      body { overflow-y: auto; overflow-x: hidden; }
+      .page-head, .search-wrap, .section-block { padding-left: 16px; padding-right: 16px; }
+      .page-head h1 { font-size: 24px; }
+      .btn-my-clubs { width: 100%; min-height: 44px; justify-content: center; }
+      .search-input { font-size: 16px; }
+      .sidebar .nav-item { padding: 14px 14px; font-size: 16px; min-height: 44px; }
+      .logout { padding: 14px; min-height: 44px; justify-content: center; }
+    }
   </style>
 </head>
 <body>
+  {% include 'mobile_drawer_nav.html' %}
   <div class="app">
     <aside class="sidebar">
       <div class="user-section">

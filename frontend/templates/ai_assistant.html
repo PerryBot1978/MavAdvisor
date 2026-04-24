@@ -291,6 +291,26 @@
       .message { max-width: 94%; }
       .send-button { min-width: 78px; }
     }
+
+    @media (max-width: 640px) {
+      .topbar {
+        padding: 16px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .btn-clear { width: 100%; min-height: 44px; }
+      .content { padding: 16px; }
+      .page-title { font-size: 22px; }
+      .chat-input { font-size: 16px; }
+      .chat-input-area { flex-wrap: wrap; }
+      .send-button { min-height: 44px; }
+    }
+
+    @media (max-width: 480px) {
+      .chat-input-area { flex-direction: column; }
+      .send-button { width: 100%; min-width: 0; }
+    }
   </style>
 </head>
 <body>

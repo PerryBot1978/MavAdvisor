@@ -1,0 +1,164 @@
+{
+    "username": "sanjana",
+    "email": "sanju.daram@gmail.com",
+    "profile": {
+        "major": "Computer Science",
+        "classification": "Junior",
+        "certificate_interests": [
+            "navigation"
+        ],
+        "club_interests": [
+            "data"
+        ]
+    },
+    "planner": {
+        "courses_completed": [
+            "coms2302",
+            "creative_arts",
+            "cse1106",
+            "cse1310",
+            "cse1320",
+            "cse1325",
+            "cse2312",
+            "cse2315",
+            "cse3310",
+            "cse3318",
+            "cse3320",
+            "engl1301",
+            "ie3301",
+            "math1426",
+            "math2425",
+            "phys1443",
+            "phys1444",
+            "pols2311",
+            "tech1",
+            "tech_options1"
+        ],
+        "courses_in_progress": [
+            "cse3302",
+            "cse3314",
+            "cse3330",
+            "history1",
+            "tech2"
+        ],
+        "certificates": [
+            {
+                "certificate_id": "unmanned_vehicle_systems",
+                "certificate_name": "Unmanned Vehicle Systems (UVS)",
+                "score": 1
+            }
+        ],
+        "clubs": [
+            {
+                "club_id": "data_analytics_technology_association",
+                "club_name": "Data Analytics and Technology Association",
+                "score": 1
+            }
+        ],
+        "certificates_selected": [],
+        "clubs_selected": [],
+        "total_hours_to_completed": 123,
+        "hours_completed": 59,
+        "electives_met": {
+            "security": false,
+            "tech": false,
+            "gened_history": false,
+            "tech_options": true,
+            "gened_pols": false,
+            "gened_social": false,
+            "gened_creative_arts": true,
+            "gened_culture": false
+        }
+    },
+    "updates": [
+        {
+            "type": "courses_updated_from_web",
+            "recognized_courses": [
+                "coms2302",
+                "cse1106",
+                "cse1310",
+                "cse1320",
+                "cse1325",
+                "cse2312",
+                "cse2315",
+                "cse3310",
+                "cse3318",
+                "cse3320",
+                "engl1301",
+                "ie3301",
+                "math1426",
+                "math2425",
+                "phys1443",
+                "phys1444",
+                "pols2311"
+            ],
+            "recognized_in_progress": [
+                "cse3302",
+                "cse3314",
+                "cse3330"
+            ],
+            "resolved_courses": [
+                {
+                    "raw": "anth2322",
+                    "selected_option": "gened_creative_arts",
+                    "status": "completed"
+                },
+                {
+                    "raw": "math1421",
+                    "selected_option": "extra",
+                    "status": "completed"
+                },
+                {
+                    "raw": "musi1300",
+                    "selected_option": "tech_options",
+                    "status": "completed"
+                },
+                {
+                    "raw": "en1131",
+                    "selected_option": "extra",
+                    "status": "completed"
+                },
+                {
+                    "raw": "econ2305",
+                    "selected_option": "extra",
+                    "status": "completed"
+                },
+                {
+                    "raw": "hist1301",
+                    "selected_option": "tech_options",
+                    "status": "completed"
+                },
+                {
+                    "raw": "hist1302",
+                    "selected_option": "gened_history",
+                    "status": "in_progress"
+                },
+                {
+                    "raw": "math3330",
+                    "selected_option": "tech",
+                    "status": "in_progress"
+                }
+            ],
+            "messages": [
+                "Counted toward GENED_CREATIVE_ARTS as CREATIVE_ARTS.",
+                "math1421 counted as EXTRA.",
+                "Counted toward TECH_OPTIONS as TECH_OPTIONS1.",
+                "en1131 counted as EXTRA.",
+                "econ2305 counted as EXTRA.",
+                "Counted toward TECH as TECH1.",
+                "Counted toward GENED_HISTORY as HISTORY1.",
+                "Counted toward TECH as TECH2."
+            ],
+            "electives_met": {
+                "security": false,
+                "tech": false,
+                "gened_history": false,
+                "tech_options": true,
+                "gened_pols": false,
+                "gened_social": false,
+                "gened_creative_arts": true,
+                "gened_culture": false
+            }
+        }
+    ]
+}

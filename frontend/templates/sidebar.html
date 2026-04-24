@@ -122,13 +122,31 @@
         box-shadow: inset 0 1px 1px rgba(255,255,255,0.12);
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 640px) {
         #shared-sidebar {
-            width: 100%;
-            min-height: auto;
+            padding: 20px 0 14px;
+        }
+        #shared-sidebar .user-section {
+            padding: 0 16px 20px;
+        }
+        #shared-sidebar nav {
+            padding: 16px 10px 0;
+        }
+        #shared-sidebar .nav-item {
+            padding: 14px 14px;
+            font-size: 16px;
+            min-height: 44px;
+        }
+        #shared-sidebar .logout {
+            margin: 12px 12px 10px;
+            padding: 14px 14px;
+            min-height: 44px;
+            justify-content: center;
         }
     }
 </style>
+
+{% include 'mobile_drawer_nav.html' %}
 
 <aside id="shared-sidebar">
     <div class="user-section">

@@ -246,6 +246,22 @@
             .topbar { padding: 20px; }
             .content { padding: 20px; }
         }
+
+        @media (max-width: 640px) {
+            .page-title { font-size: 22px; }
+            .topbar { padding: 16px; }
+            .content { padding: 16px; }
+            .cal-card,
+            .types-card { padding: 16px; }
+            .cal-card {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .cal-grid { min-width: 520px; }
+            .cal-nav { gap: 10px; }
+            .cal-month-label { min-width: 0; font-size: 20px; }
+            .month-badge { padding: 10px 14px; font-size: 14px; }
+        }
     </style>
 </head>
 <body>

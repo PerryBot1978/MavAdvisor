@@ -487,11 +487,19 @@
 
     .course-badge {
       display: inline-block;
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: 12px;
+      padding: 0.42em 0.85em;
+      border-radius: 0.5em;
+      font-size: 0.8em;
       font-weight: 700;
-      letter-spacing: 0.03em;
+      letter-spacing: 0.02em;
+      line-height: 1.2;
+      white-space: nowrap;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+      text-align: center;
       background: rgba(91,110,245,0.25);
       color: #8da4f7;
     }
@@ -742,11 +750,127 @@
       body { overflow: auto; }
       .layout { flex-direction: column; height: auto; }
       .sidebar { width: 100%; min-height: auto; }
-      .topbar { padding: 20px; }
-      .content { padding: 20px; }
-      .courses-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+      .layout .main > .topbar {
+        gap: 10px;
+        align-items: flex-start;
+      }
+      .layout .main > .topbar > div:first-child {
+        margin-left: 4px;
+        min-width: 0;
+        flex: 1;
+      }
+      .page-title { font-size: 20px; letter-spacing: -0.2px; }
+      .page-sub { font-size: 13px; margin-top: 2px; }
+      .btn-upload {
+        padding: 8px 12px;
+        font-size: 12px;
+        flex-shrink: 0;
+        line-height: 1.25;
+        max-width: 44%;
+        text-align: center;
+      }
+      .content { padding: 18px 16px; }
+      .left-col { gap: 18px; }
+      .card { padding: 16px; border-radius: 14px; }
+      .degree-header { margin-bottom: 14px; gap: 8px; }
+      .degree-header h2 { font-size: 16px; }
+      .credit-badge { font-size: 11px; padding: 5px 10px; }
+      .degree-body { gap: 14px; align-items: center; }
+      .circle-wrap { width: 92px; height: 92px; }
+      .circle-wrap svg { width: 92px; height: 92px; }
+      .circle-pct { font-size: 17px; line-height: 1.1; }
+      .circle-label { font-size: 9px; line-height: 1.15; }
+      .degree-info h3 { font-size: 16px; line-height: 1.25; margin-bottom: 4px; }
+      .degree-info p { font-size: 13px; line-height: 1.4; }
+      .courses-header { flex-direction: column; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+      .courses-header h2 { font-size: 16px; }
       .courses-right { width: 100%; flex-wrap: wrap; }
-      .search-input { width: 100%; max-width: 260px; }
+      .pill-filter { font-size: 13px; padding: 8px 12px; min-width: 0; }
+      .search-input { width: 100%; max-width: 260px; font-size: 13px; padding: 8px 12px; }
+      .btn-search { font-size: 13px; padding: 8px 14px; }
+      .course-table {
+        table-layout: fixed;
+        width: 100%;
+      }
+      .course-table th { font-size: 10px; padding: 0 0 10px; }
+      .course-table th:first-child,
+      .course-table td:first-child {
+        width: 34%;
+        text-align: center;
+        padding-left: 4px;
+        padding-right: 4px;
+      }
+      .course-table th:nth-child(2),
+      .course-table td:nth-child(2) {
+        width: 38%;
+        text-align: center;
+        padding-left: 6px;
+        padding-right: 6px;
+      }
+      .course-table th:last-child,
+      .course-table td:last-child {
+        width: 28%;
+        vertical-align: middle;
+        padding-left: 2px;
+      }
+      .course-table td {
+        font-size: 14px;
+        padding: 12px 0;
+        vertical-align: middle;
+      }
+      .status-badge {
+        padding: 3px 9px;
+        font-size: 10px;
+        gap: 4px;
+        border-radius: 999px;
+        white-space: nowrap;
+        line-height: 1.2;
+      }
+      .status-dot { width: 5px; height: 5px; }
+      .empty-row { font-size: 13px; padding: 16px 0; }
+      .clubs-card h2 { font-size: 15px; margin-bottom: 12px; }
+      .club-item { font-size: 14px; padding: 9px 0; }
+      .view-all { font-size: 13px; margin-top: 10px; }
+      .right-col { gap: 18px; }
+    }
+
+    @media (max-width: 640px) {
+      .layout .main > .topbar > div:first-child { margin-left: 6px; }
+      .page-title { font-size: 18px; }
+      .page-sub { font-size: 12px; }
+      .btn-upload {
+        font-size: 11px;
+        padding: 7px 10px;
+        max-width: 46%;
+      }
+      .content { padding: 14px 12px; }
+      .card { padding: 14px; }
+      .degree-header h2 { font-size: 15px; }
+      .degree-info h3 { font-size: 15px; }
+      .degree-info p { font-size: 12px; }
+      .circle-wrap { width: 84px; height: 84px; }
+      .circle-wrap svg { width: 84px; height: 84px; }
+      .circle-pct { font-size: 15px; line-height: 1.1; }
+      .circle-label { font-size: 8px; line-height: 1.15; }
+      .status-badge { font-size: 9px; padding: 3px 8px; }
+      .courses-header h2 { font-size: 15px; }
+      .degree-body {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .circle-wrap { align-self: center; }
+      .sidebar .nav-item {
+        padding: 14px 14px;
+        font-size: 16px;
+        min-height: 44px;
+      }
+      .logout {
+        padding: 14px 14px;
+        min-height: 44px;
+        justify-content: center;
+      }
+      .search-input { max-width: none; }
     }
   </style>
 </head>
@@ -754,6 +878,26 @@
 
 <div class="bg"></div>
 <div class="bg-overlay"></div>
+{% include 'mobile_drawer_nav.html' %}
+<style>
+  /* After mobile_drawer (body): keep dashboard title row inset + vertical padding */
+  @media (max-width: 900px) {
+    .layout .main > .topbar {
+      padding-left: 58px !important;
+      padding-top: 18px;
+      padding-right: 16px;
+      padding-bottom: 16px;
+    }
+  }
+  @media (max-width: 640px) {
+    .layout .main > .topbar {
+      padding-left: 54px !important;
+      padding-top: 14px;
+      padding-right: 12px;
+      padding-bottom: 14px;
+    }
+  }
+</style>
 
 <div class="layout">
   <aside class="sidebar">

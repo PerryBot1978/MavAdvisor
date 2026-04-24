@@ -21,11 +21,25 @@
             margin: 0;
             z-index: 1000;
         }
-        .main-content {
-            margin-left: 200px;
-            padding: 20px;
-            min-height: 100vh;
+    .main-content {
+        margin-left: 200px;
+        padding: 20px;
+        min-height: 100vh;
+    }
+
+    @media (max-width: 640px) {
+        .sidebar {
+            position: relative;
+            width: 100%;
+            height: auto;
+            min-height: auto;
         }
+        .main-content {
+            margin-left: 0;
+            padding: 16px;
+            min-height: auto;
+        }
+    }
     </style>
     {% block extra_styles %}{% endblock %}
 </head>

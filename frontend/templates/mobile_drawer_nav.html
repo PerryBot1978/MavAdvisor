@@ -1,0 +1,296 @@
+{# Mobile-only (max-width: 900px): off-canvas sidebar + menu button. Desktop unchanged. #}
+<button type="button" class="mav-mnav-toggle" id="mavMnavToggle" aria-label="Open navigation menu" aria-expanded="false">☰</button>
+<div class="mav-mnav-backdrop" id="mavMnavBackdrop" aria-hidden="true"></div>
+
+<style>
+@media (max-width: 900px) {
+  /* Smaller control; when menu open, move to top-right so it does not cover the profile block */
+  .mav-mnav-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 10003;
+    width: 36px;
+    height: 36px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    background: rgba(20, 28, 42, 0.94);
+    color: #e8eaf0;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.28);
+    font-family: system-ui, sans-serif;
+    transition: left 0.2s ease, right 0.2s ease, transform 0.2s ease;
+  }
+
+  body.mav-mnav-open .mav-mnav-toggle {
+    left: auto;
+    right: 12px;
+  }
+
+  .mav-mnav-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: rgba(0, 0, 0, 0.48);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body.mav-mnav-open .mav-mnav-backdrop {
+    display: block;
+  }
+
+  body.mav-mnav-open {
+    overflow: hidden;
+  }
+
+  /*
+   * Raise the app shell above the backdrop so the drawer is not trapped under it
+   * (sidebar was inside .layout with z-index: 2, so taps hit the backdrop first).
+   */
+  body.mav-mnav-open .layout,
+  body.mav-mnav-open .app {
+    position: relative;
+    z-index: 10001;
+  }
+
+  /* Clicks on dimmed main content pass through to the backdrop to close */
+  body.mav-mnav-open .layout > .main,
+  body.mav-mnav-open .layout > main.main,
+  body.mav-mnav-open .app > .main {
+    pointer-events: none;
+  }
+
+  #shared-sidebar,
+  .layout > aside.sidebar,
+  .app > aside.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100dvh;
+    width: min(280px, 85vw);
+    z-index: 10002;
+    transform: translateX(-100%);
+    transition: transform 0.28s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    pointer-events: none;
+    padding: 14px 0 12px;
+  }
+
+  body.mav-mnav-open #shared-sidebar,
+  body.mav-mnav-open .layout > aside.sidebar,
+  body.mav-mnav-open .app > aside.sidebar {
+    transform: translateX(0);
+    pointer-events: auto;
+  }
+
+  /* Tighter drawer typography (mobile only) */
+  #shared-sidebar .user-section,
+  .layout > aside.sidebar .user-section,
+  .app > aside.sidebar .user-section {
+    padding: 0 14px 16px;
+  }
+
+  #shared-sidebar .user-avatar,
+  .layout > aside.sidebar .user-avatar,
+  .app > aside.sidebar .user-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 17px;
+    margin-bottom: 8px;
+  }
+
+  #shared-sidebar .user-name,
+  .layout > aside.sidebar .user-name,
+  .app > aside.sidebar .user-name {
+    font-size: 15px;
+  }
+
+  #shared-sidebar .user-level,
+  #shared-sidebar .user-dept,
+  #shared-sidebar .user-email,
+  .layout > aside.sidebar .user-level,
+  .layout > aside.sidebar .user-dept,
+  .layout > aside.sidebar .user-email,
+  .app > aside.sidebar .user-level,
+  .app > aside.sidebar .user-dept,
+  .app > aside.sidebar .user-email {
+    font-size: 12px;
+  }
+
+  #shared-sidebar nav,
+  .layout > aside.sidebar nav,
+  .app > aside.sidebar nav {
+    padding: 12px 10px 0;
+  }
+
+  #shared-sidebar .nav-label,
+  .layout > aside.sidebar .nav-label,
+  .app > aside.sidebar .nav-label {
+    font-size: 9px;
+    margin-bottom: 6px;
+  }
+
+  #shared-sidebar .nav-item,
+  .layout > aside.sidebar .nav-item,
+  .app > aside.sidebar .nav-item {
+    padding: 8px 10px;
+    font-size: 14px;
+    min-height: 40px;
+    gap: 8px;
+  }
+
+  #shared-sidebar .nav-icon,
+  .layout > aside.sidebar .nav-icon,
+  .app > aside.sidebar .nav-icon {
+    font-size: 14px;
+    width: 20px;
+  }
+
+  #shared-sidebar .logout,
+  .layout > aside.sidebar .logout,
+  .app > aside.sidebar .logout {
+    margin: 10px 10px 8px;
+    padding: 9px 12px;
+    font-size: 13px;
+    min-height: 40px;
+  }
+
+  #shared-sidebar .nav-group,
+  .layout > aside.sidebar .nav-group,
+  .app > aside.sidebar .nav-group {
+    margin-top: 14px;
+  }
+
+  /* Space for menu button + a little air before titles */
+  .layout .main > .topbar,
+  .layout .main > header.topbar {
+    padding-left: 56px;
+  }
+
+  .app > .main > .page-head {
+    padding-top: 48px;
+  }
+}
+
+@media (min-width: 901px) {
+  .mav-mnav-toggle,
+  .mav-mnav-backdrop {
+    display: none !important;
+  }
+}
+</style>
+
+<script>
+(function () {
+  var MQ = '(max-width: 900px)';
+
+  function mqMatches() {
+    return window.matchMedia(MQ).matches;
+  }
+
+  function setOpen(open) {
+    var t = document.getElementById('mavMnavToggle');
+    var b = document.getElementById('mavMnavBackdrop');
+    if (open) {
+      document.body.classList.add('mav-mnav-open');
+      if (t) {
+        t.setAttribute('aria-expanded', 'true');
+        t.setAttribute('aria-label', 'Close navigation menu');
+        t.textContent = '\u00D7';
+      }
+      if (b) b.setAttribute('aria-hidden', 'false');
+    } else {
+      document.body.classList.remove('mav-mnav-open');
+      if (t) {
+        t.setAttribute('aria-expanded', 'false');
+        t.setAttribute('aria-label', 'Open navigation menu');
+        t.textContent = '\u2630'; /* ☰ */
+      }
+      if (b) b.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function closeNav() {
+    setOpen(false);
+  }
+
+  function toggleNav() {
+    if (document.body.classList.contains('mav-mnav-open')) closeNav();
+    else setOpen(true);
+  }
+
+  function bindNavLinks() {
+    var sel = [
+      '#shared-sidebar a.nav-item[href^="/user/"]',
+      '.layout aside.sidebar a.nav-item[href^="/user/"]',
+      '.app aside.sidebar a.nav-item[href^="/user/"]'
+    ].join(', ');
+    document.querySelectorAll(sel).forEach(function (a) {
+      a.addEventListener('click', function () {
+        if (mqMatches()) closeNav();
+      });
+    });
+    var logoutSel = [
+      '#shared-sidebar .logout',
+      '.layout aside.sidebar .logout',
+      '.app aside.sidebar .logout'
+    ].join(', ');
+    document.querySelectorAll(logoutSel).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (mqMatches()) closeNav();
+      });
+    });
+  }
+
+  function bind() {
+    var toggle = document.getElementById('mavMnavToggle');
+    var backdrop = document.getElementById('mavMnavBackdrop');
+    if (toggle) {
+      toggle.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (!mqMatches()) return;
+        toggleNav();
+      });
+    }
+    if (backdrop) {
+      backdrop.addEventListener('click', closeNav);
+    }
+    bindNavLinks();
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && mqMatches()) closeNav();
+    });
+
+    var mql = window.matchMedia(MQ);
+    function onMq() {
+      if (!mql.matches) closeNav();
+    }
+    if (mql.addEventListener) mql.addEventListener('change', onMq);
+    else if (mql.addListener) mql.addListener(onMq);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bind);
+  } else {
+    bind();
+  }
+})();
+</script>

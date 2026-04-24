@@ -500,6 +500,30 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        @media (max-width: 640px) {
+            .left-panel,
+            .right-panel {
+                padding: 1rem;
+            }
+
+            .left-heading h1 {
+                font-size: 1.65rem;
+            }
+
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            select,
+            textarea {
+                font-size: 16px;
+            }
+
+            .form-card button,
+            .btn-primary {
+                min-height: 44px;
+            }
+        }
     </style>
 </head>
 <body>
